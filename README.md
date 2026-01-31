@@ -1,4 +1,4 @@
-gi# Syllabus Kitty 🐱
+# Syllabus Kitty 🐱
 
 A modern, AI-powered web application that extracts structured information from syllabus PDFs and prepares it for Google Calendar integration.
 
@@ -94,7 +94,7 @@ syllabus-kitty/
 - `POST /api/calendar/create` - Create calendar (coming soon)
 - `GET /docs` - Interactive API documentation
 
-## 
+## 🔮 Coming Soon
 
 - [ ] Google Calendar integration
 - [ ] Multi-file upload
@@ -105,4 +105,4 @@ syllabus-kitty/
 
 ## 📄 License
 
-
+MIT
