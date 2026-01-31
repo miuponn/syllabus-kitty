@@ -38,7 +38,11 @@ echo "✅ Backend dependencies installed"
 # Create .env if it doesn't exist
 if [ ! -f ".env" ]; then
     cp .env.example .env
-    echo "⚠️  Please edit backend/.env and add your GEMINI_API_KEY"
+    echo "✅ Created backend/.env from template"
+    echo "⚠️  IMPORTANT: Edit backend/.env and add your GEMINI_API_KEY"
+    echo "    Get your key from: https://makersuite.google.com/app/apikey"
+else
+    echo "✅ backend/.env already exists"
 fi
 
 cd ..
@@ -54,8 +58,10 @@ echo "✅ Frontend dependencies installed"
 
 # Create .env.local if it doesn't exist
 if [ ! -f ".env.local" ]; then
-    cp .env.local.example .env.local
-    echo "✅ Frontend environment file created"
+    cp .env.example .env.local
+    echo "✅ Created frontend/.env.local from template"
+else
+    echo "✅ frontend/.env.local already exists"
 fi
 
 cd ..
@@ -63,8 +69,14 @@ echo ""
 
 echo "🎉 Setup complete!"
 echo ""
+echo "⚠️  SECURITY REMINDER:"
+echo "   - NEVER commit .env or .env.local files"
+echo "   - These files are gitignored and contain your secrets"
+echo "   - See SECURITY.md for detailed security guidelines"
+echo ""
 echo "Next steps:"
-echo "1. Add your Gemini API key to backend/.env"
+echo "1. Edit backend/.env and add your Gemini API key"
+echo "   Get it from: https://makersuite.google.com/app/apikey"
 echo "2. Start the backend: cd backend && source venv/bin/activate && python main.py"
 echo "3. In a new terminal, start the frontend: cd frontend && npm run dev"
 echo "4. Open http://localhost:3000 in your browser"
