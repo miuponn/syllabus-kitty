@@ -1,0 +1,94 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Syllabus Kitty//syllabus-kitty.app//
+X-WR-CALNAME:CSI 1234 - Introduction to Computer Science
+X-WR-TIMEZONE:America/Toronto
+BEGIN:VEVENT
+SUMMARY:CSI 1234 - Introduction to Computer Science - Lecture
+DTSTART;TZID=America/Toronto:20260112T100000
+DTEND;TZID=America/Toronto:20260112T113000
+RRULE:FREQ=WEEKLY;UNTIL=20260410T113000;BYDAY=MO,WE
+DESCRIPTION:Type: Lecture\nInstructor: Dr. Jane Smith
+LOCATION:SITE 5084
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:CSI 1234 - Introduction to Computer Science - Lab
+DTSTART;TZID=America/Toronto:20260116T143000
+DTEND;TZID=America/Toronto:20260116T160000
+RRULE:FREQ=WEEKLY;UNTIL=20260410T160000;BYDAY=FR
+DESCRIPTION:Type: Lab\nInstructor: TA John Doe
+LOCATION:SITE 2052
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:CSI 1234 - Introduction to Computer Science - Tutorial
+DTSTART;TZID=America/Toronto:20260113T130000
+DTEND;TZID=America/Toronto:20260113T140000
+RRULE:FREQ=WEEKLY;UNTIL=20260407T140000;BYDAY=TU
+DESCRIPTION:Type: Tutorial
+LOCATION:DMS 1110
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:📌 Assignment 1 (10%) - CSI 1234 - Introduction to Computer Scie
+ nce
+DTSTART;TZID=America/Toronto:20260207T235900
+DTEND;TZID=America/Toronto:20260208T005900
+DESCRIPTION:Type: Assignment\nWeight: 10%\nDue: 23:59\n\nIntroduction to P
+ ython programming
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Assignment 1 due tomorrow!
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:📌 Assignment 2 (10%) - CSI 1234 - Introduction to Computer Scie
+ nce
+DTSTART;TZID=America/Toronto:20260228T235900
+DTEND;TZID=America/Toronto:20260301T005900
+DESCRIPTION:Type: Assignment\nWeight: 10%\nDue: 23:59\n\nData structures b
+ asics
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Assignment 2 due tomorrow!
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:📌 Midterm Exam (25%) - CSI 1234 - Introduction to Computer Scie
+ nce
+DTSTART;TZID=America/Toronto:20260221T100000
+DTEND;TZID=America/Toronto:20260221T120000
+DESCRIPTION:Type: Midterm\nWeight: 25%\nDue: 10:00\n\nCovers weeks 1-6
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Midterm Exam due tomorrow!
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:📌 Final Project (25%) - CSI 1234 - Introduction to Computer Sci
+ ence
+DTSTART;TZID=America/Toronto:20260405T235900
+DTEND;TZID=America/Toronto:20260406T005900
+DESCRIPTION:Type: Project\nWeight: 25%\nDue: 23:59\n\nBuild a complete app
+ lication\nGroup work: Yes (size: 3)
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Final Project due tomorrow!
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:📌 Final Exam (30%) - CSI 1234 - Introduction to Computer Scienc
+ e
+DTSTART;TZID=America/Toronto:20260420T090000
+DTEND;TZID=America/Toronto:20260420T110000
+DESCRIPTION:Type: Final\nWeight: 30%\nDue: 09:00\n\nComprehensive exam cov
+ ering all material
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Final Exam due tomorrow!
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+END:VCALENDAR

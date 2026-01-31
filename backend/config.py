@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     gemini_api_key: str
     gemini_model_id: str = "gemini-2.0-flash-exp"
     
+    # Supabase Configuration
+    supabase_url: str
+    supabase_service_role_key: str
+    
     # Google Calendar API
     google_calendar_credentials_path: str = "./credentials.json"
     google_calendar_token_path: str = "./token.json"
