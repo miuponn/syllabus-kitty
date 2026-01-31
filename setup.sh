@@ -54,8 +54,10 @@ echo "✅ Frontend dependencies installed"
 
 # Create .env.local if it doesn't exist
 if [ ! -f ".env.local" ]; then
-    cp .env.local.example .env.local
-    echo "✅ Frontend environment file created"
+    cp .env.example .env.local
+    echo "✅ Created frontend/.env.local from template"
+else
+    echo "✅ frontend/.env.local already exists"
 fi
 
 cd ..
@@ -63,10 +65,22 @@ echo ""
 
 echo "🎉 Setup complete!"
 echo ""
-echo "Next steps:"
-echo "1. Add your Gemini API key to backend/.env"
-echo "2. Start the backend: cd backend && source venv/bin/activate && python main.py"
-echo "3. In a new terminal, start the frontend: cd frontend && npm run dev"
-echo "4. Open http://localhost:3000 in your browser"
+echo "⚠️  IMPORTANT: Configure your environment variables"
+echo ""
+echo "Backend Setup:"
+echo "1. Get your Gemini API key from: https://makersuite.google.com/app/apikey"
+echo "2. Edit backend/.env and add: GEMINI_API_KEY=your_key_here"
+echo ""
+echo "Frontend Setup:"
+echo "1. Create a Supabase project at: https://supabase.com"
+echo "2. Go to Project Settings → API in Supabase dashboard"
+echo "3. Edit frontend/.env.local and add:"
+echo "   - NEXT_PUBLIC_SUPABASE_URL=your_project_url"
+echo "   - NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key"
+echo ""
+echo "Start the app:"
+echo "1. Backend: cd backend && source venv/bin/activate && python main.py"
+echo "2. Frontend (new terminal): cd frontend && npm run dev"
+echo "3. Open http://localhost:3000 in your browser"
 echo ""
 echo "🐱 Happy coding!"
