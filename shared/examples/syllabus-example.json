@@ -1,0 +1,237 @@
+{
+  "language": "en",
+  "institution": {
+    "name": "University of Ottawa",
+    "city": "Ottawa",
+    "country": "Canada",
+    "url": "https://uottawa.ca"
+  },
+  "date": {
+    "term": "Winter",
+    "year": 2026
+  },
+  "urls": ["https://example.edu/syllabus.pdf"],
+  
+  "extracted_sections": {
+    "title": [
+      {
+        "text": "Introduction to Computer Science",
+        "mean_proba": 0.98,
+        "ci1": 0,
+        "ci2": 33,
+        "ti1": 0,
+        "ti2": 5
+      }
+    ],
+    "code": [
+      {
+        "text": "CSI 1101",
+        "mean_proba": 0.99,
+        "ci1": 35,
+        "ci2": 43,
+        "ti1": 6,
+        "ti2": 8
+      }
+    ],
+    "teaching_assistants": [
+      {
+        "name": [
+          {
+            "text": "Alex Kim",
+            "mean_proba": 0.95,
+            "ci1": 210,
+            "ci2": 218,
+            "ti1": 42,
+            "ti2": 44
+          }
+        ],
+        "email": [
+          {
+            "text": "alex.kim@uottawa.ca",
+            "mean_proba": 0.93,
+            "ci1": 220,
+            "ci2": 245,
+            "ti1": 45,
+            "ti2": 48
+          }
+        ],
+        "office_hours": {
+          "days": [
+            {
+              "text": "Wednesday",
+              "mean_proba": 0.9,
+              "ci1": 260,
+              "ci2": 269,
+              "ti1": 52,
+              "ti2": 53
+            }
+          ],
+          "times": [
+            {
+              "text": "2–4pm",
+              "mean_proba": 0.88,
+              "ci1": 270,
+              "ci2": 275,
+              "ti1": 54,
+              "ti2": 56
+            }
+          ]
+        }
+      }
+    ]
+  },
+
+  "class_schedule": {
+    "timezone": "America/Toronto",
+    "events": [
+      {
+        "type": "Lecture",
+        "type_extracted": [
+          {
+            "text": "Lecture",
+            "mean_proba": 0.97,
+            "ci1": 300,
+            "ci2": 307,
+            "ti1": 60,
+            "ti2": 61
+          }
+        ],
+        "days": [1, 3],
+        "time": {
+          "start": "10:00",
+          "end": "11:30",
+          "extracted": [
+            {
+              "text": "10:00 AM - 11:30 AM",
+              "mean_proba": 0.95,
+              "ci1": 320,
+              "ci2": 339,
+              "ti1": 65,
+              "ti2": 70
+            }
+          ]
+        },
+        "location": "SITE B0138",
+        "location_extracted": [
+          {
+            "text": "SITE B0138",
+            "mean_proba": 0.94,
+            "ci1": 350,
+            "ci2": 360,
+            "ti1": 75,
+            "ti2": 77
+          }
+        ],
+        "instructor": "Dr. Jane Smith"
+      },
+      {
+        "type": "DGD",
+        "type_extracted": [
+          {
+            "text": "Discussion Group (DGD)",
+            "mean_proba": 0.91,
+            "ci1": 400,
+            "ci2": 422,
+            "ti1": 85,
+            "ti2": 89
+          }
+        ],
+        "days": [5],
+        "time": {
+          "start": "14:30",
+          "end": "15:30"
+        },
+        "location": "MNO E218",
+        "instructor": "Alex Kim"
+      },
+      {
+        "type": "Lab",
+        "days": [4],
+        "time": {
+          "start": "13:00",
+          "end": "15:00"
+        },
+        "location": "CBY B302",
+        "notes": "Bring laptop"
+      }
+    ]
+  },
+
+  "grading_scheme": {
+    "assessments": [
+      {
+        "id": "a1",
+        "title": "Assignment 1: Programming Fundamentals",
+        "title_extracted": [
+          {
+            "text": "Assignment 1: Programming Fundamentals",
+            "mean_proba": 0.92,
+            "ci1": 500,
+            "ci2": 538,
+            "ti1": 100,
+            "ti2": 106
+          }
+        ],
+        "type": "Assignment",
+        "due_date": "2026-02-15",
+        "due_time": "23:59",
+        "weight": 10,
+        "weight_extracted": [
+          {
+            "text": "10%",
+            "mean_proba": 0.96,
+            "ci1": 550,
+            "ci2": 553,
+            "ti1": 115,
+            "ti2": 116
+          }
+        ],
+        "submission_method": "Brightspace"
+      },
+      {
+        "id": "midterm",
+        "title": "Midterm Exam",
+        "type": "Midterm",
+        "due_date": "2026-03-10",
+        "due_time": "10:00",
+        "weight": 30,
+        "description": "In-person exam covering weeks 1-6"
+      },
+      {
+        "id": "project",
+        "title": "Final Project",
+        "type": "Project",
+        "due_date": "2026-04-15",
+        "weight": 25,
+        "is_group_work": true,
+        "group_size": 3,
+        "description": "Team project implementing a complete application"
+      },
+      {
+        "id": "final",
+        "title": "Final Exam",
+        "type": "Final",
+        "due_date": "2026-04-25",
+        "weight": 35,
+        "description": "Cumulative final exam"
+      }
+    ],
+    "total_weight": 100,
+    "grading_scale": [
+      { "letter": "A+", "min_percentage": 90, "max_percentage": 100 },
+      { "letter": "A", "min_percentage": 85, "max_percentage": 89 },
+      { "letter": "A-", "min_percentage": 80, "max_percentage": 84 },
+      { "letter": "B+", "min_percentage": 75, "max_percentage": 79 },
+      { "letter": "B", "min_percentage": 70, "max_percentage": 74 },
+      { "letter": "C+", "min_percentage": 65, "max_percentage": 69 },
+      { "letter": "C", "min_percentage": 60, "max_percentage": 64 },
+      { "letter": "D+", "min_percentage": 55, "max_percentage": 59 },
+      { "letter": "D", "min_percentage": 50, "max_percentage": 54 },
+      { "letter": "E", "min_percentage": 40, "max_percentage": 49 },
+      { "letter": "F", "min_percentage": 0, "max_percentage": 39 }
+    ],
+    "late_policy": "5% deduction per day, up to 3 days. No submissions accepted after 3 days."
+  },
+
+  "citations": []
+}
