@@ -88,6 +88,12 @@ cd frontend
 # Install dependencies
 npm install
 
+# Setup environment
+cp .env.example .env.local
+# Edit .env.local and add:
+# - NEXT_PUBLIC_SUPABASE_URL (from Supabase dashboard)
+# - NEXT_PUBLIC_SUPABASE_ANON_KEY (from Supabase dashboard)
+
 # Run development server
 npm run dev
 ```
@@ -110,8 +116,31 @@ Frontend runs at: http://localhost:3000
 - File validation (PDF only, max 25MB)
 - Direct FastAPI integration
 - Automatic JSON download
+- Auto-redirect to syllabus view page
 - Success/error states with beautiful UI
 - Preview of extracted course info
+
+**Syllabus View Page** (`/syllabus/[id]/page.tsx`):
+- **PDF Viewer**: Collapsible PDF display with page markers
+- **Menu Bar**: Translate, screen reader, and simplify options
+- **Assessments List**: Display all assignments, exams, projects with:
+  - Type badges with color coding
+  - Weight and due date information
+  - Expandable list (shows 5, expand for all)
+  - Edit/delete buttons on hover
+  - Smooth deletion animations
+- **Recurring Events List**: Display lectures, labs, DGDs, tutorials with:
+  - Count summary (e.g., "3 lectures, 2 labs")
+  - Day/time information
+  - Location details
+  - Edit/delete functionality
+- **Calendar Integration**: "Add All to Google Calendar" button
+
+**Activity Cards**:
+- Reusable card component for events and assessments
+- Hover effects with edit/delete buttons
+- Color-coded type badges
+- Icons for weight, date, and location
 
 ## 🔧 Backend Architecture
 
@@ -183,8 +212,29 @@ ALLOWED_ORIGINS=http://localhost:3000
 3. **Gemini AI** → Extracts structured data
 4. **Parsing** → Converts to TypeScript models
 5. **Response** → JSON sent to frontend
-6. **Download** → Automatic JSON file download
-7. **Preview** → UI shows key extracted info
+6. **Storage** → Data saved to Supabase (optional)
+7. **Download** → Automatic JSON file download
+8. **Preview** → UI shows key extracted info
+
+## 🗄️ Supabase Integration
+
+Supabase is used for:
+- **Authentication**: User login and registration
+- **Data Storage**: Store extracted syllabus data
+- **User Management**: Link syllabi to users
+- **Real-time updates**: Sync data across sessions
+
+### Setting up Supabase
+
+1. Create account at https://supabase.com
+2. Create a new project
+3. Go to Project Settings → API
+4. Copy your project URL and anon key
+5. Add to `frontend/.env.local`:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   ```
 
 ## 🔮 Future Integration: Google Calendar
 
@@ -202,6 +252,16 @@ The `calendar_service.py` is ready for:
 1. Visit: https://makersuite.google.com/app/apikey
 2. Click "Create API Key"
 3. Copy key to `backend/.env`
+
+### Supabase Keys
+
+1. Go to: https://app.supabase.com
+2. Select your project
+3. Go to Project Settings → API
+4. Copy:
+   - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
+   - Anon/Public Key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+5. Add to `frontend/.env.local`
 
 ### Google Calendar API (Future)
 
@@ -251,6 +311,12 @@ The system handles:
 - Run `npm install`
 - Check port 3000 is available
 
+### Supabase connection errors
+- Verify NEXT_PUBLIC_SUPABASE_URL is correct
+- Verify NEXT_PUBLIC_SUPABASE_ANON_KEY is correct
+- Check project is not paused in Supabase dashboard
+- Restart Next.js dev server after adding env vars
+
 ### CORS errors
 - Verify backend is running
 - Check ALLOWED_ORIGINS in backend/.env
@@ -264,7 +330,8 @@ The system handles:
 ## 🎉 What You Have Now
 
 ✅ Complete backend with FastAPI + Gemini AI
-✅ Modern, cute frontend with Next.js
+✅ Modern, cute frontend with Next.js + Supabase
+✅ User authentication and data persistence
 ✅ Comprehensive TypeScript models
 ✅ PDF upload and extraction pipeline
 ✅ Automatic JSON download
@@ -274,20 +341,24 @@ The system handles:
 ✅ Google Calendar service (ready to implement)
 ✅ Beautiful UI with gradients and animations
 ✅ Error handling and validation
+✅ Secure environment variable management
 
 ## 🚀 Next Steps
 
-1. Get your Gemini API key
-2. Run `./setup.sh`
-3. Add API key to `backend/.env`
-4. Start backend: `cd backend && python main.py`
-5. Start frontend: `cd frontend && npm run dev`
-6. Upload a test syllabus PDF!
+1. Get your Gemini API key from https://makersuite.google.com/app/apikey
+2. Create a Supabase project at https://supabase.com
+3. Run `./setup.sh`
+4. Add Gemini API key to `backend/.env`
+5. Add Supabase credentials to `frontend/.env.local`
+6. Start backend: `cd backend && python main.py`
+7. Start frontend: `cd frontend && npm run dev`
+8. Upload a test syllabus PDF!
 
 ## 📚 Documentation
 
 - Backend API: http://localhost:8000/docs
 - Frontend: http://localhost:3000
+- Supabase Dashboard: https://app.supabase.com
 - TypeScript Models: See `shared/types/`
 - Example JSON: See `shared/examples/syllabus-example.json`
 
