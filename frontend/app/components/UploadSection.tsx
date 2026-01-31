@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useAuth } from '@/app/providers/AuthProvider';
 
 interface UploadState {
   uploading: boolean;
@@ -10,6 +11,7 @@ interface UploadState {
 }
 
 export default function UploadSection() {
+  const { getTokens } = useAuth();
   const [uploadState, setUploadState] = useState<UploadState>({
     uploading: false,
     progress: 0,
@@ -81,11 +83,31 @@ export default function UploadSection() {
     });
 
     try {
+      const { supabaseToken, googleAccessToken, googleRefreshToken } = await getTokens();
+      
+      console.log('Sending tokens to backend:', {
+        supabase: supabaseToken ? '✓' : '✗',
+        googleAccess: googleAccessToken ? '✓' : '✗',
+        googleRefresh: googleRefreshToken ? '✓' : '✗',
+      });
+      
       const formData = new FormData();
       formData.append('file', file);
 
+      const headers: HeadersInit = {};
+      
+      // Send Supabase JWT as standard Authorization header
+      if (supabaseToken) {
+        headers['Authorization'] = `Bearer ${supabaseToken}`;
+      }
+      
+      // Send Google tokens for Calendar API access
+      if (googleAccessToken) headers['X-Google-Access-Token'] = googleAccessToken;
+      if (googleRefreshToken) headers['X-Google-Refresh-Token'] = googleRefreshToken;
+
       const response = await fetch('http://localhost:8000/api/syllabus/upload', {
         method: 'POST',
+        headers,
         body: formData,
       });
 

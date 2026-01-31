@@ -9,6 +9,11 @@ type AuthContextType = {
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  getTokens: () => Promise<{
+    supabaseToken: string | undefined;
+    googleAccessToken: string | undefined;
+    googleRefreshToken: string | undefined;
+  }>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -16,6 +21,11 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signInWithGoogle: async () => {},
   signOut: async () => {},
+  getTokens: async () => ({
+    supabaseToken: undefined,
+    googleAccessToken: undefined,
+    googleRefreshToken: undefined,
+  }),
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -26,6 +36,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Supabase JWT:", session?.access_token);
+      console.log("Google Access Token:", session?.provider_token);
+      console.log("Google Refresh Token:", session?.provider_refresh_token);
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -34,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth state changed:", _event);
+      console.log("Google Access Token:", session?.provider_token);
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -46,6 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: 'https://www.googleapis.com/auth/calendar',
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       },
     });
   };
@@ -54,8 +74,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const getTokens = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    return {
+      supabaseToken: session?.access_token,
+      googleAccessToken: session?.provider_token ?? undefined,
+      googleRefreshToken: session?.provider_refresh_token ?? undefined,
+    };
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, getTokens }}>
       {children}
     </AuthContext.Provider>
   );
