@@ -2,9 +2,11 @@
 
 import { useState, useRef } from 'react';
 import { useAuth } from '@/app/providers/AuthProvider';
+import { useRouter } from 'next/navigation';
 
 interface UploadState {
   uploading: boolean;
+  processing: boolean;
   progress: number;
   error: string | null;
   result: any | null;
@@ -12,8 +14,10 @@ interface UploadState {
 
 export default function UploadSection() {
   const { getTokens } = useAuth();
+  const router = useRouter();
   const [uploadState, setUploadState] = useState<UploadState>({
     uploading: false,
+    processing: false,
     progress: 0,
     error: null,
     result: null,
@@ -55,6 +59,7 @@ export default function UploadSection() {
     if (!file.name.toLowerCase().endsWith('.pdf')) {
       setUploadState({
         uploading: false,
+        processing: false,
         progress: 0,
         error: 'Please upload a PDF file',
         result: null,
@@ -67,6 +72,7 @@ export default function UploadSection() {
     if (file.size > maxSize) {
       setUploadState({
         uploading: false,
+        processing: false,
         progress: 0,
         error: 'File size exceeds 25MB limit',
         result: null,
@@ -77,6 +83,7 @@ export default function UploadSection() {
     // Reset state and start upload
     setUploadState({
       uploading: true,
+      processing: false,
       progress: 0,
       error: null,
       result: null,
@@ -120,6 +127,7 @@ export default function UploadSection() {
       
       setUploadState({
         uploading: false,
+        processing: false,
         progress: 100,
         error: null,
         result: result,
@@ -128,9 +136,17 @@ export default function UploadSection() {
       // Download JSON file
       downloadJSON(result, file.name);
 
+      // Redirect to syllabus view page
+      // Generate a temporary ID or use the one from the backend if available
+      const syllabusId = result.file_id || result.id || Date.now().toString();
+      setTimeout(() => {
+        router.push(`/syllabus/${syllabusId}`);
+      }, 1500); 
+
     } catch (error) {
       setUploadState({
         uploading: false,
+        processing: false,
         progress: 0,
         error: error instanceof Error ? error.message : 'Upload failed',
         result: null,
@@ -182,8 +198,13 @@ export default function UploadSection() {
             <div className="space-y-4">
               <div className="text-6xl animate-bounce">📄</div>
               <p className="text-xl font-semibold text-purple-600">
-                Analyzing your syllabus...
+                {uploadState.processing ? 'Processing your syllabus...' : 'Uploading...'}
               </p>
+              {uploadState.processing && (
+                <p className="text-sm text-gray-500">
+                  This may take a moment...
+                </p>
+              )}
               <div className="w-full max-w-md mx-auto bg-gray-200 rounded-full h-3 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-300 animate-pulse"
