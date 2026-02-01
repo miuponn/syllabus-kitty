@@ -17,6 +17,20 @@ class Settings(BaseSettings):
     google_calendar_credentials_path: str = "./credentials.json"
     google_calendar_token_path: str = "./token.json"
     
+    # Email Configuration (SMTP)
+    smtp_server: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = ""
+    smtp_starttls: bool = True
+    smtp_ssl_tls: bool = False
+    
+    # Notification Settings
+    notification_advance_days: int = 10
+    timezone: str = "America/Toronto"
+    system_notification_key: str = "your_secret_system_key_here"
+    
     # FastAPI Configuration
     host: str = "0.0.0.0"
     port: int = 8000
