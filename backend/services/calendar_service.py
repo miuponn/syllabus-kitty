@@ -1,10 +1,5 @@
 """
-<<<<<<< HEAD
 Google Calendar API Service, to be used later to create calendar events from extracted syllabus data
-=======
-Google Calendar API Service
-This will be used later to create calendar events from extracted syllabus data
->>>>>>> 06a67a2b3582b32eff048fb0af505fcb53774af8
 """
 
 from google.oauth2.credentials import Credentials
