@@ -91,10 +91,7 @@ export default function AssessmentsList({ assessments, onEdit, onDelete, onAddNe
 
       {/* List with smooth height transition */}
       <div 
-        className="relative overflow-hidden transition-all duration-500 ease-in-out"
-        style={{
-          maxHeight: isExpanded ? `${contentHeight}px` : `${collapsedHeight}px`,
-        }}
+        className="relative transition-all duration-500 ease-in-out"
       >
         <div ref={contentRef} className="space-y-3">
           {visibleItems.map((assessment) => (

@@ -253,6 +253,10 @@ body::before {
   75% { content: ' . . .'; }
 }
 
+.animate-ellipsis-cycle {
+  animation: ellipsis-cycle 2s steps(4, end) infinite;
+}
+
 /* Custom scrollbar - auto-hide when not scrolling */
 html {
   scrollbar-width: thin;

@@ -23,7 +23,7 @@ export default function PawfessorLoading({
     <div className="flex flex-col items-center justify-center gap-4 sm:gap-6 md:gap-8 w-full">
       {/* Pawfessor */}
       <div className="relative">
-        {/* Pawfessor walking animation */}
+        {/* Pawfessor image with walking animation */}
         <div className="animate-pawfessor-walk">
           <img 
             src={imageSrc} 
@@ -35,39 +35,33 @@ export default function PawfessorLoading({
       
       {/* Loading text with animated ellipses */}
       <div 
-        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl relative inline-block"
+        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl relative"
         style={{
           fontFamily: 'ViuCobacoba, display',
           color: 'white',
-          WebkitTextStroke: `2px ${strokeColor}`,
+          WebkitTextStroke: `4px ${strokeColor}`,
           paintOrder: 'stroke fill',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
         loading
         <span 
-          className="ellipsis-dots"
+          className="ellipsis-dots relative text-left"
           style={{
-            position: 'relative',
             display: 'inline-block',
-            width: '2rem',
-            textAlign: 'left'
+            width: '3em',
+            flexShrink: 0,
           }}
-        >
-          <style jsx>{`
-            .ellipsis-dots::after {
-              content: '';
-              animation: ellipsis-cycle 2s steps(4, end) infinite;
-            }
-            
-            @keyframes ellipsis-cycle {
-              0%, 100% { content: ''; }
-              25% { content: ' .'; }
-              50% { content: ' . .'; }
-              75% { content: ' . . .'; }
-            }
-          `}</style>
-        </span>
+        />
       </div>
+      
+      <style jsx>{`
+        .ellipsis-dots::after {
+          content: '';
+          animation: ellipsis-cycle 2s steps(4, end) infinite;
+        }
+      `}</style>
     </div>
   );
 }

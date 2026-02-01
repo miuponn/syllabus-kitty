@@ -18,3 +18,10 @@ fastapi-mail==1.4.1
 jinja2==3.1.2
 python-dateutil==2.8.2
 pytz==2023.3
+
+# PDF Generation for Simplified Syllabus
+# Note: WeasyPrint requires system libraries. On macOS run:
+#   brew install pango gdk-pixbuf libffi
+# See: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html
+markdown2==2.5.0
+weasyprint==62.3

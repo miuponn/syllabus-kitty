@@ -3,6 +3,17 @@
 echo "🐱 Setting up Syllabus Kitty..."
 echo ""
 
+# Kill any existing processes
+echo "🔪 Killing existing processes..."
+pkill -f "uvicorn main:app" 2>/dev/null
+pkill -f "python main.py" 2>/dev/null
+pkill -f "next-server" 2>/dev/null
+pkill -f "node.*next" 2>/dev/null
+lsof -ti:8000 | xargs kill -9 2>/dev/null
+lsof -ti:3000 | xargs kill -9 2>/dev/null
+echo "✅ Cleaned up existing processes"
+echo ""
+
 # Check if Python is installed
 if ! command -v python3 &> /dev/null; then
     echo "❌ Python 3 is not installed. Please install Python 3.9 or higher."
@@ -16,6 +27,18 @@ if ! command -v node &> /dev/null; then
 fi
 
 echo "✅ Python and Node.js found"
+echo ""
+
+# Check for Homebrew (macOS)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    if ! command -v brew &> /dev/null; then
+        echo "⚠️  Homebrew not found. Installing system dependencies manually may be required."
+    else
+        echo "📦 Installing system dependencies for PDF generation (WeasyPrint)..."
+        brew install pango gdk-pixbuf libffi 2>/dev/null || echo "✅ System libraries already installed or install skipped"
+        echo "✅ System dependencies ready"
+    fi
+fi
 echo ""
 
 # Setup Backend
@@ -80,6 +103,7 @@ echo "   - NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key"
 echo ""
 echo "Start the app:"
 echo "1. Backend: cd backend && source venv/bin/activate && python main.py"
+echo "   (On macOS, if PDF generation fails, run with: export DYLD_LIBRARY_PATH=/opt/homebrew/lib && python main.py)"
 echo "2. Frontend (new terminal): cd frontend && npm run dev"
 echo "3. Open http://localhost:3000 in your browser"
 echo ""
