@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import PawfessorLoading from './PawfessorLoading';
@@ -14,6 +14,30 @@ interface UploadState {
   result: any | null;
 }
 
+// Fun loading phrases to cycle through
+const LOADING_PHRASES = [
+  "Gone fishing...",
+  "Pawfessor is grading your syllabus...",
+  "Chasing laser pointers...",
+  "Napping on your textbook...",
+  "Sharpening claws on deadlines...",
+  "Knocking things off your desk...",
+  "Hunting for extra credit...",
+  "Stretching before the big read...",
+  "Meow-nalyzing course content...",
+  "Pawsing for dramatic effect...",
+  "Untangling assignment yarn...",
+  "Sniffing out important dates...",
+  "Batting at due dates...",
+  "Curling up with your syllabus...",
+  "Making biscuits on the keyboard...",
+  "Doing cat-culations...",
+  "Finding the purr-fect schedule...",
+  "Whisker-ing through pages...",
+  "Pouncing on course objectives...",
+  "Having a meow-ment...",
+];
+
 export default function UploadSection() {
   const { getTokens } = useAuth();
   const router = useRouter();
@@ -25,7 +49,59 @@ export default function UploadSection() {
     result: null,
   });
   const [dragActive, setDragActive] = useState(false);
+  const [loadingPhrase, setLoadingPhrase] = useState(LOADING_PHRASES[0]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Cycle through fun loading phrases
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (uploadState.uploading) {
+      // Pick a random phrase immediately
+      setLoadingPhrase(LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)]);
+      
+      // Then cycle every 2.5 seconds
+      interval = setInterval(() => {
+        setLoadingPhrase(prev => {
+          // Pick a different phrase than the current one
+          let newPhrase = prev;
+          while (newPhrase === prev) {
+            newPhrase = LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)];
+          }
+          return newPhrase;
+        });
+      }, 2500);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [uploadState.uploading]);
+
+  // Fake progress simulation
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (uploadState.uploading && uploadState.progress < 95) {
+      interval = setInterval(() => {
+        setUploadState(prev => {
+          // Slow down as we get higher
+          const increment = prev.processing 
+            ? Math.random() * 2 + 0.5  // Slower during AI processing (0.5-2.5%)
+            : Math.random() * 5 + 2;   // Faster during upload (2-7%)
+          
+          const maxProgress = prev.processing ? 95 : 45; // Cap at 45% during upload, 95% during processing
+          const newProgress = Math.min(prev.progress + increment, maxProgress);
+          
+          return { ...prev, progress: newProgress };
+        });
+      }, 300);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [uploadState.uploading, uploadState.processing]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -255,14 +331,25 @@ export default function UploadSection() {
           {uploadState.uploading ? (
             <div className="space-y-6">
               <PawfessorLoading variant="pink" strokeColor="#C76585" />
-              <div className="w-full max-w-md mx-auto bg-white/50 rounded-full h-4 overflow-hidden shadow-inner">
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{ 
-                    width: '75%',
-                    background: 'linear-gradient(to right, #FFC1D0, #FEC192, #F7E799, #B3E97F, #8deef5)'
-                  }}
-                />
+              <div className="w-full max-w-md mx-auto">
+                <div className="bg-white/50 rounded-full h-4 overflow-hidden shadow-inner">
+                  <div
+                    className="h-full rounded-full transition-all duration-300 ease-out"
+                    style={{ 
+                      width: `${uploadState.progress}%`,
+                      background: 'var(--gradient-rainbow)'
+                    }}
+                  />
+                </div>
+                <p 
+                  className="text-sm mt-2 font-semibold transition-all duration-300"
+                  style={{ fontFamily: 'Urbanist, sans-serif', color: 'rgba(214, 131, 151, 0.9)' }}
+                >
+                  {uploadState.processing 
+                    ? `${loadingPhrase} ${Math.round(uploadState.progress)}%`
+                    : `Uploading... ${Math.round(uploadState.progress)}%`
+                  }
+                </p>
               </div>
             </div>
           ) : (

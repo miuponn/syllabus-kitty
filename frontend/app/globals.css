@@ -121,6 +121,7 @@
   --gradient-peach: linear-gradient(to right, #FB9DC1, #FFAC95);
   --gradient-goldy: linear-gradient(to right, #ffb078, #ffdd76);
   --gradient-cool-blue: linear-gradient(to right, #8e8ae2, #f3b9ff);
+  --gradient-rainbow: linear-gradient(to right, #FC9FBE 0%, #FEC192 22%, #F7E799 54%, #B3E97F 75%, #C0FFF4 100%);
 
   /* Shadows */
   --shadow-glow-pink: 0 0 20px rgba(252, 118, 255, 0.5);

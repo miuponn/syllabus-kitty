@@ -80,8 +80,9 @@ export default function SyllabusPage() {
   const [isSimplifying, setIsSimplifying] = useState(false);
   const [isSimplified, setIsSimplified] = useState(false);
   const [simplifiedPdfUrl, setSimplifiedPdfUrl] = useState<string | null>(null);
+  const [simplifiedPdfBlob, setSimplifiedPdfBlob] = useState<Blob | null>(null);
   const [simplifyError, setSimplifyError] = useState<string | null>(null);
-  const [hasSimplified, setHasSimplified] = useState(false); // Track if simplified version exists
+  const [hasSimplified, setHasSimplified] = useState(false); // track if simplified version exists
   
   // Translation state
   const [isTranslating, setIsTranslating] = useState(false);
@@ -392,6 +393,7 @@ export default function SyllabusPage() {
       const pdfBlob = await response.blob();
       const blobUrl = URL.createObjectURL(pdfBlob);
       
+      setSimplifiedPdfBlob(pdfBlob);
       setSimplifiedPdfUrl(blobUrl);
       setIsSimplified(true);
       setHasSimplified(true); // Mark that simplified version exists for translation
@@ -826,6 +828,7 @@ export default function SyllabusPage() {
             onScreenReader={handleScreenReader}
             onSimplify={handleSimplify}
             isTranslating={isTranslating}
+            isSimplifying={isSimplifying}
             hasSimplified={hasSimplified}
           />
 
@@ -839,6 +842,7 @@ export default function SyllabusPage() {
                 filename={calendarJson?.course_name}
                 simplifiedPdfUrl={simplifiedPdfUrl}
                 isSimplified={isSimplified}
+                simplifiedPdfBlob={simplifiedPdfBlob}
               />
             </div>
 

@@ -10,6 +10,8 @@ interface PDFViewerProps {
   // Simplify feature props - display only
   simplifiedPdfUrl?: string | null;
   isSimplified?: boolean;
+  // For PDF download in simplified mode
+  simplifiedPdfBlob?: Blob | null;
 }
 
 // Height per "page" in pixels - tweak this based on actual PDF rendering
@@ -24,6 +26,7 @@ export default function PDFViewer({
   onExport,
   simplifiedPdfUrl,
   isSimplified = false,
+  simplifiedPdfBlob,
 }: PDFViewerProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -64,21 +67,41 @@ export default function PDFViewer({
     }
   }, [isAnimating]);
 
-  const handleDownloadJSON = () => {
-    if (!jsonData) return;
+  const handleDownloadPDF = async () => {
+    const baseFilename = filename 
+      ? filename.replace('.pdf', '')
+      : 'syllabus';
     
-    const jsonStr = JSON.stringify(jsonData, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename 
-      ? `${filename.replace('.pdf', '')}_extracted.json`
-      : 'syllabus_extracted.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    if (isSimplified && simplifiedPdfBlob) {
+      // Download the simplified PDF from blob
+      const url = URL.createObjectURL(simplifiedPdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${baseFilename}_simplified.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else if (pdfUrl) {
+      // Fetch and download the original PDF from Supabase storage URL
+      try {
+        const response = await fetch(pdfUrl);
+        if (!response.ok) throw new Error('Failed to fetch PDF');
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${baseFilename}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error downloading PDF:', error);
+        // Fallback: open in new tab
+        window.open(pdfUrl, '_blank');
+      }
+    }
   };
 
   const handleExport = () => {
@@ -139,16 +162,15 @@ export default function PDFViewer({
         
         {/* Action buttons */}
         <div className="flex items-center gap-2">
-          {/* Download JSON button */}
+          {/* Download button */}
           <button
-            onClick={handleDownloadJSON}
-            disabled={!jsonData}
+            onClick={handleDownloadPDF}
+            disabled={!pdfUrl && !(isSimplified && simplifiedPdfBlob)}
             className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             style={{
               background: 'rgba(255, 255, 255, 0.5)',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
-              border: '2px solid white',
             }}
           >
             <span 
@@ -161,7 +183,7 @@ export default function PDFViewer({
                 backgroundClip: 'text',
               }}
             >
-              JSON
+              Download PDF
             </span>
             {/* Export icon with matching gradient */}
             <svg 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import ActivityCard from './ActivityCard';
 
 interface Assessment {
@@ -19,22 +19,25 @@ interface AssessmentsListProps {
   onAddNew?: () => void;
 }
 
+const CARD_HEIGHT = 90; // Approximate height per card in pixels (including padding)
+const GAP_HEIGHT = 12; // gap-3 = 0.75rem = 12px
+
 export default function AssessmentsList({ assessments, onEdit, onDelete, onAddNew }: AssessmentsListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [contentHeight, setContentHeight] = useState<number>(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const maxVisible = 5;
-  const visibleItems = isExpanded ? assessments : assessments.slice(0, maxVisible);
   const hasMore = assessments.length > maxVisible;
 
-  // Calculate content height for smooth animation
-  useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight);
-    }
-  }, [assessments, isExpanded]);
+  // Calculate heights for smooth animation
+  const calculateHeight = (itemCount: number) => {
+    if (itemCount === 0) return 0;
+    return (CARD_HEIGHT * itemCount) + (GAP_HEIGHT * (itemCount - 1));
+  };
 
-  const collapsedHeight = Math.min(assessments.length, maxVisible) * 100; // Approximate height per card
+  const collapsedHeight = calculateHeight(Math.min(assessments.length, maxVisible));
+  const expandedHeight = calculateHeight(assessments.length);
+  // Only constrain height if there are more items than maxVisible
+  const currentHeight = hasMore ? (isExpanded ? expandedHeight : collapsedHeight) : undefined;
 
   return (
     <div 
@@ -91,10 +94,11 @@ export default function AssessmentsList({ assessments, onEdit, onDelete, onAddNe
 
       {/* List with smooth height transition */}
       <div 
-        className="relative transition-all duration-500 ease-in-out"
+        className="relative overflow-hidden transition-all duration-500 ease-in-out"
+        style={currentHeight !== undefined ? { height: `${currentHeight}px` } : {}}
       >
         <div ref={contentRef} className="space-y-3">
-          {visibleItems.map((assessment) => (
+          {assessments.map((assessment) => (
             <div key={assessment.id}>
               <ActivityCard
                 id={assessment.id}
