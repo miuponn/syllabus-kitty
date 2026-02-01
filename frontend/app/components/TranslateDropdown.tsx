@@ -208,13 +208,16 @@ export default function TranslateDropdown({
               style={{
                 fontFamily: 'Poppins, sans-serif',
                 borderRadius: 'var(--radius-md)',
-                background: isTranslating 
-                  ? 'linear-gradient(90deg, #FC9FBE, #FEC192, #F7E799, #B3E97F, #C0FFF4, #FC9FBE)'
+                backgroundColor: isTranslating 
+                  ? undefined
                   : selectedLanguage && hasSimplified 
                     ? 'var(--bubbles)' 
                     : '#d1d5db',
-                backgroundSize: isTranslating ? '200% 100%' : undefined,
-                animation: isTranslating ? 'rainbow-slide 2s linear infinite' : undefined,
+                backgroundImage: isTranslating 
+                  ? 'linear-gradient(90deg, #FC9FBE, #FEC192, #F7E799, #B3E97F, #C0FFF4, #FC9FBE)'
+                  : undefined,
+                backgroundSize: isTranslating ? '200% 100%' : 'auto',
+                animation: isTranslating ? 'rainbow-slide 2s linear infinite' : 'none',
                 color: 'white',
                 cursor: selectedLanguage && hasSimplified && !isTranslating ? 'pointer' : isTranslating ? 'wait' : 'not-allowed',
                 transition: 'all 0.2s ease',
