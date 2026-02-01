@@ -13,7 +13,6 @@ import EditAssessmentModal from '../../components/EditAssessmentModal';
 import EditEventModal from '../../components/EditEventModal';
 import AddAssessmentModal from '../../components/AddAssessmentModal';
 import AddEventModal from '../../components/AddEventModal';
-import PawfessorChat from '../../components/PawfessorChat';
 import CalendarSuccessModal from '../../components/CalendarSuccessModal';
 
 // Helper function to extract day of week from recurrence rule
