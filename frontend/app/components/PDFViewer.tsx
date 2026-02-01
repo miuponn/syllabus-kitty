@@ -7,17 +7,47 @@ interface PDFViewerProps {
   jsonData?: any;
   filename?: string;
   onExport?: () => void;
+  // Simplify feature props - display only
+  simplifiedPdfUrl?: string | null;
+  isSimplified?: boolean;
+  // For PDF download in simplified mode
+  simplifiedPdfBlob?: Blob | null;
 }
 
 // Height per "page" in pixels - tweak this based on actual PDF rendering
 const PAGE_HEIGHT = 280;
 const INITIAL_PAGES = 3;
-const MAX_EXPANDED_PAGES = 33; // 3 initial + 30 more
+const MAX_EXPANDED_PAGES = 5; // Show 5 pages when expanded (reasonable viewport fit)
 
-export default function PDFViewer({ pdfUrl, jsonData, filename, onExport }: PDFViewerProps) {
+export default function PDFViewer({ 
+  pdfUrl, 
+  jsonData, 
+  filename, 
+  onExport,
+  simplifiedPdfUrl,
+  isSimplified = false,
+  simplifiedPdfBlob,
+}: PDFViewerProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0); // Force iframe reload on URL change
   const viewerRef = useRef<HTMLDivElement>(null);
+  
+  // Determine which URL to display
+  const displayUrl = isSimplified && simplifiedPdfUrl ? simplifiedPdfUrl : pdfUrl;
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('PDFViewer - displayUrl:', displayUrl);
+    console.log('PDFViewer - pdfUrl:', pdfUrl);
+    console.log('PDFViewer - isSimplified:', isSimplified);
+    console.log('PDFViewer - simplifiedPdfUrl:', simplifiedPdfUrl);
+  }, [displayUrl, pdfUrl, isSimplified, simplifiedPdfUrl]);
+  
+  // Update iframe when display URL changes
+  useEffect(() => {
+    setIframeKey(prev => prev + 1);
+  }, [displayUrl]);
   
   // Calculate heights for collapsed and expanded states
   const collapsedHeight = PAGE_HEIGHT * INITIAL_PAGES;
@@ -37,21 +67,41 @@ export default function PDFViewer({ pdfUrl, jsonData, filename, onExport }: PDFV
     }
   }, [isAnimating]);
 
-  const handleDownloadJSON = () => {
-    if (!jsonData) return;
+  const handleDownloadPDF = async () => {
+    const baseFilename = filename 
+      ? filename.replace('.pdf', '')
+      : 'syllabus';
     
-    const jsonStr = JSON.stringify(jsonData, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename 
-      ? `${filename.replace('.pdf', '')}_extracted.json`
-      : 'syllabus_extracted.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    if (isSimplified && simplifiedPdfBlob) {
+      // Download the simplified PDF from blob
+      const url = URL.createObjectURL(simplifiedPdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${baseFilename}_simplified.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else if (pdfUrl) {
+      // Fetch and download the original PDF from Supabase storage URL
+      try {
+        const response = await fetch(pdfUrl);
+        if (!response.ok) throw new Error('Failed to fetch PDF');
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${baseFilename}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error downloading PDF:', error);
+        // Fallback: open in new tab
+        window.open(pdfUrl, '_blank');
+      }
+    }
   };
 
   const handleExport = () => {
@@ -66,7 +116,7 @@ export default function PDFViewer({ pdfUrl, jsonData, filename, onExport }: PDFV
 
   return (
     <div 
-      className="rounded-2xl p-4 sm:p-5 md:p-6 h-full"
+      className="rounded-2xl p-4 sm:p-5 md:p-6"
       style={{
         background: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.5), rgba(192, 255, 248, 0.5))',
         backdropFilter: 'blur(10px)',
@@ -74,7 +124,7 @@ export default function PDFViewer({ pdfUrl, jsonData, filename, onExport }: PDFV
         border: '1px solid rgba(255, 255, 255, 0.5)',
       }}
     >
-      {/* Header row with title and export button */}
+      {/* Header row with title and buttons */}
       <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Folder icon */}
@@ -83,72 +133,94 @@ export default function PDFViewer({ pdfUrl, jsonData, filename, onExport }: PDFV
             alt="" 
             className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 object-contain"
           />
-          <h2 
-            className="text-base sm:text-lg md:text-xl lg:text-2xl"
-            style={{
-              fontFamily: 'Urbanist, sans-serif',
-              fontWeight: 800,
-              color: 'var(--dark)',
-            }}
-          >
-            Syllabus PDF
-          </h2>
+          <div className="flex flex-col">
+            <h2 
+              className="text-base sm:text-lg md:text-xl lg:text-2xl"
+              style={{
+                fontFamily: 'Urbanist, sans-serif',
+                fontWeight: 800,
+                color: 'var(--dark)',
+              }}
+            >
+              {isSimplified ? 'Simplified View' : 'Syllabus PDF'}
+            </h2>
+            {/* Simplified indicator badge */}
+            {isSimplified && (
+              <span 
+                className="text-xs font-semibold px-2 py-0.5 rounded-full w-fit mt-1 animate-fade-in"
+                style={{
+                  background: 'var(--gradient-goldy)',
+                  color: 'var(--dark)',
+                  fontFamily: 'Urbanist, sans-serif',
+                }}
+              >
+                Accessible Format
+              </span>
+            )}
+          </div>
         </div>
         
-        {/* Download JSON button - glass style with gradient text and icon */}
-        <button
-          onClick={handleDownloadJSON}
-          disabled={!jsonData}
-          className="flex items-center gap-2 px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          style={{
-            background: 'rgba(255, 255, 255, 0.5)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            border: '2px solid white',
-          }}
-        >
-          <span 
+        {/* Action buttons */}
+        <div className="flex items-center gap-2">
+          {/* Download button */}
+          <button
+            onClick={handleDownloadPDF}
+            disabled={!pdfUrl && !(isSimplified && simplifiedPdfBlob)}
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             style={{
-              fontFamily: 'Urbanist, sans-serif',
-              fontWeight: 700,
-              background: 'var(--gradient-gem-dark)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
+              background: 'rgba(255, 255, 255, 0.5)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
             }}
           >
-            Download JSON
-          </span>
-          {/* Export icon with matching gradient */}
-          <svg 
-            className="w-4 h-4 sm:w-5 sm:h-5"
-            viewBox="0 0 24 24" 
-            fill="none"
-            stroke="url(#gem-dark-gradient)"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <defs>
-              <linearGradient id="gem-dark-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#3045bb" />
-                <stop offset="100%" stopColor="#24bbc6" />
-              </linearGradient>
-            </defs>
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-        </button>
+            <span 
+              style={{
+                fontFamily: 'Urbanist, sans-serif',
+                fontWeight: 700,
+                background: 'var(--gradient-gem-dark)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Download PDF
+            </span>
+            {/* Export icon with matching gradient */}
+            <svg 
+              className="w-4 h-4 sm:w-5 sm:h-5"
+              viewBox="0 0 24 24" 
+              fill="none"
+              stroke="url(#gem-dark-gradient)"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <defs>
+                <linearGradient id="gem-dark-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#3045bb" />
+                  <stop offset="100%" stopColor="#24bbc6" />
+                </linearGradient>
+              </defs>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </button>
+        </div>
       </div>
-
+      
       {/* PDF viewer container with frosted inner glass */}
       <div 
-        className="relative rounded-xl overflow-hidden"
+        className="relative rounded-xl overflow-hidden transition-all duration-300"
         style={{
           background: 'rgba(255, 255, 255, 0.6)',
           backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255, 255, 255, 0.4)',
+          border: isSimplified 
+            ? '2px solid var(--lime)' 
+            : '1px solid rgba(255, 255, 255, 0.4)',
+          boxShadow: isSimplified 
+            ? '0 0 20px rgba(179, 233, 127, 0.3)' 
+            : 'none',
         }}
       >
         {/* Page indicator */}
@@ -162,7 +234,7 @@ export default function PDFViewer({ pdfUrl, jsonData, filename, onExport }: PDFV
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           }}
         >
-          Page 1 of 10
+          {isSimplified ? '✨ Simplified' : 'Page 1 of 10'}
         </div>
 
         {/* Scrollable PDF area with smooth height transition */}
@@ -174,11 +246,32 @@ export default function PDFViewer({ pdfUrl, jsonData, filename, onExport }: PDFV
           }}
         >
           <iframe
-            src={pdfUrl}
+            key={iframeKey}
+            src={displayUrl}
             className="w-full"
-            style={{ height: `${expandedHeight}px` }}
-            title="Syllabus PDF"
-          />
+            style={{ 
+              height: `${expandedHeight}px`,
+            }}
+            title={isSimplified ? "Simplified Syllabus" : "Syllabus PDF"}
+            onError={(e) => {
+              console.error('PDF iframe load error:', e);
+              console.error('Failed to load PDF from:', displayUrl);
+            }}
+          >
+            {/* Fallback content if iframe doesn't work */}
+            <p className="p-4 text-center" style={{ fontFamily: 'Urbanist, sans-serif' }}>
+              Unable to display PDF. 
+              <a 
+                href={displayUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline ml-2"
+                style={{ color: 'var(--blue-body)' }}
+              >
+                Click here to open in a new tab
+              </a>
+            </p>
+          </iframe>
         </div>
       </div>
 
@@ -217,6 +310,17 @@ export default function PDFViewer({ pdfUrl, jsonData, filename, onExport }: PDFV
           </svg>
         </button>
       </div>
+      
+      {/* Fade-in animation */}
+      <style jsx>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(-4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

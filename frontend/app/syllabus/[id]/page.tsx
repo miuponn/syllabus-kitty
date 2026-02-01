@@ -76,6 +76,17 @@ export default function SyllabusPage() {
   const [recurringEvents, setRecurringEvents] = useState<any[]>([]);
   const [isAddingToCalendar, setIsAddingToCalendar] = useState(false);
   
+  // Simplify PDF state
+  const [isSimplifying, setIsSimplifying] = useState(false);
+  const [isSimplified, setIsSimplified] = useState(false);
+  const [simplifiedPdfUrl, setSimplifiedPdfUrl] = useState<string | null>(null);
+  const [simplifiedPdfBlob, setSimplifiedPdfBlob] = useState<Blob | null>(null);
+  const [simplifyError, setSimplifyError] = useState<string | null>(null);
+  const [hasSimplified, setHasSimplified] = useState(false); // track if simplified version exists
+  
+  // Translation state
+  const [isTranslating, setIsTranslating] = useState(false);
+  
   // Modal state
   const [editAssessmentModal, setEditAssessmentModal] = useState<{
     isOpen: boolean;
@@ -259,17 +270,152 @@ export default function SyllabusPage() {
     }
   };
 
-  const handleTranslate = () => {
-    alert('Translation feature coming soon!');
+  const handleTranslate = async (languageCode: string) => {
+    if (!hasSimplified) {
+      alert('Please click "Simplify" first to generate a simplified syllabus before translating.');
+      return;
+    }
+    
+    setIsTranslating(true);
+    
+    try {
+      const { supabaseToken } = await getTokens();
+      
+      const response = await fetch('http://localhost:8000/api/simplify/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(supabaseToken ? { 'Authorization': `Bearer ${supabaseToken}` } : {}),
+        },
+        body: JSON.stringify({
+          syllabus_id: syllabusId,
+          target_language: languageCode,
+          generate_pdf: true,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to translate syllabus');
+      }
+      
+      // Get the PDF blob and trigger download
+      const pdfBlob = await response.blob();
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      
+      // Trigger download
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = `simplified_syllabus_${languageCode}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      // Clean up blob URL
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      
+    } catch (error) {
+      console.error('Error translating syllabus:', error);
+      alert(error instanceof Error ? error.message : 'Failed to translate syllabus');
+    } finally {
+      setIsTranslating(false);
+    }
   };
 
   const handleScreenReader = () => {
     alert('Screen reader feature coming soon!');
   };
 
-  const handleSimplify = () => {
-    alert('Simplify feature coming soon!');
+  const handleSimplify = async () => {
+    // If already simplified, toggle back to original
+    if (isSimplified) {
+      setIsSimplified(false);
+      setSimplifyError(null);
+      return;
+    }
+    
+    // If we already have a simplified URL cached, just switch to it
+    if (simplifiedPdfUrl) {
+      setIsSimplified(true);
+      setSimplifyError(null);
+      return;
+    }
+    
+    setIsSimplifying(true);
+    setSimplifyError(null);
+    
+    try {
+      const { supabaseToken } = await getTokens();
+      
+      // Build syllabus data from what we have
+      const syllabusData = {
+        courseInfo: {
+          courseName: calendarJson?.course_name || 'Course Syllabus',
+        },
+        assessments: assessments.map(a => ({
+          title: a.title,
+          type: a.type,
+          weight: a.weight,
+          dueDate: a.due_date,
+          description: a.description,
+        })),
+        recurringEvents: recurringEvents.map(e => ({
+          title: e.title,
+          type: e.type,
+          dayOfWeek: e.day_of_week,
+          startTime: e.start_time,
+          endTime: e.end_time,
+          location: e.location,
+        })),
+        calendarEvents: calendarJson,
+      };
+      
+      const response = await fetch('http://localhost:8000/api/simplify/pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(supabaseToken ? { 'Authorization': `Bearer ${supabaseToken}` } : {}),
+        },
+        body: JSON.stringify({
+          syllabus_data: syllabusData,
+          target_language: 'en',
+          original_filename: calendarJson?.course_name,
+          syllabus_id: syllabusId, // Store simplified markdown in DB for later translation
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to generate simplified PDF');
+      }
+      
+      // Get the PDF blob and create a local URL
+      const pdfBlob = await response.blob();
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      
+      setSimplifiedPdfBlob(pdfBlob);
+      setSimplifiedPdfUrl(blobUrl);
+      setIsSimplified(true);
+      setHasSimplified(true); // Mark that simplified version exists for translation
+      
+    } catch (error) {
+      console.error('Error simplifying syllabus:', error);
+      setSimplifyError(error instanceof Error ? error.message : 'Failed to simplify');
+      // Auto-clear error after 5 seconds
+      setTimeout(() => setSimplifyError(null), 5000);
+    } finally {
+      setIsSimplifying(false);
+    }
   };
+  
+  // Cleanup blob URL on unmount
+  useEffect(() => {
+    return () => {
+      if (simplifiedPdfUrl) {
+        URL.revokeObjectURL(simplifiedPdfUrl);
+      }
+    };
+  }, [simplifiedPdfUrl]);
 
   const handleEditAssessment = (id: string) => {
     const assessment = assessments.find(a => a.id === id);
@@ -681,13 +827,23 @@ export default function SyllabusPage() {
             onTranslate={handleTranslate}
             onScreenReader={handleScreenReader}
             onSimplify={handleSimplify}
+            isTranslating={isTranslating}
+            isSimplifying={isSimplifying}
+            hasSimplified={hasSimplified}
           />
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left: PDF Viewer */}
             <div className="lg:col-span-1">
-              <PDFViewer pdfUrl={pdfUrl} jsonData={calendarJson} filename={calendarJson?.course_name} />
+              <PDFViewer 
+                pdfUrl={pdfUrl} 
+                jsonData={calendarJson} 
+                filename={calendarJson?.course_name}
+                simplifiedPdfUrl={simplifiedPdfUrl}
+                isSimplified={isSimplified}
+                simplifiedPdfBlob={simplifiedPdfBlob}
+              />
             </div>
 
             {/* Right: Schedule & Assessments */}

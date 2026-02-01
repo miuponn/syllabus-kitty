@@ -10,6 +10,15 @@ A modern, AI-powered web application that extracts structured information from s
 - Python 3.9+
 - Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
 - Supabase account and project from [Supabase](https://supabase.com)
+- **macOS only**: Homebrew for system dependencies
+
+### System Dependencies (macOS)
+
+The Simplify PDF feature uses WeasyPrint which requires system libraries:
+
+```bash
+brew install pango gdk-pixbuf libffi
+```
 
 ### Frontend Setup
 
@@ -49,6 +58,11 @@ cp .env.example .env
 3. Run the FastAPI server:
 ```bash
 python main.py
+```
+
+**Note (macOS)**: If PDF generation fails with library errors, run:
+```bash
+export DYLD_LIBRARY_PATH=/opt/homebrew/lib && python main.py
 ```
 
 The API will be available at [http://localhost:8000](http://localhost:8000)
