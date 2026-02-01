@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Urbanist, Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from './providers/AuthProvider';
+import Navbar from './components/Navbar';
 
 const urbanist = Urbanist({
   variable: "--font-urbanist",
@@ -32,6 +33,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
+          <Navbar />
           {children}
         </AuthProvider>
       </body>

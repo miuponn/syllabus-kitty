@@ -52,7 +52,7 @@ export default function KawaiiDialogue({ phrases = defaultPhrases, children }: K
             className="text-xl sm:text-2xl font-semibold"
             style={{
               fontFamily: 'ViuCobacoba, display',
-              color: '#8deef5'
+              color: 'var(--hotpinku)',
             }}
           >
             {currentPhrase}

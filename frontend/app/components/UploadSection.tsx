@@ -188,8 +188,6 @@ export default function UploadSection() {
         result: result,
       });
 
-      downloadJSON(result, file.name);
-
       // Redirect to syllabus view page using backend's file_id
       const syllabusId = result.file_id || result.syllabus_id;
       setTimeout(() => {
@@ -357,7 +355,7 @@ export default function UploadSection() {
                 Success! Your syllabus is ready! 🎉
               </p>
               <p className="text-dark/70 mb-4 font-urbanist">
-                JSON file has been downloaded automatically.
+                Redirecting to your syllabus view...
               </p>
               
               {/* Preview of extracted data */}
