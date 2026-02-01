@@ -1,12 +1,11 @@
 'use client';
 
 import UploadSection from './components/UploadSection';
-import AuthButton from './components/AuthButton';
 import KawaiiDialogue from './components/KawaiiDialogue';
 
 export default function Home() {
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative pt-16 sm:pt-20">
       {/* Floating decorative elements - background only */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {/* Animated blobs */}
@@ -27,11 +26,6 @@ export default function Home() {
           className="absolute top-1/2 left-1/2 w-80 h-80 opacity-50 animate-blob" 
           style={{ animationDelay: '4s' }}
         />
-      </div>
-
-      {/* Auth Button - top right */}
-      <div className="absolute right-8 top-8 z-50">
-        <AuthButton />
       </div>
 
       <main className="relative z-10 min-h-screen flex items-center justify-center px-8 sm:px-16 md:px-24 lg:px-32 xl:px-40 py-12 sm:py-16">

@@ -1,13 +1,17 @@
 import SyllabusBackground from './SyllabusBackground';
+import PawfessorLoading from './PawfessorLoading';
 
 export default function SyllabusLoading() {
   return (
     <div className="min-h-screen flex items-center justify-center relative">
       <SyllabusBackground />
 
-      <div className="text-center relative z-10">
-        <div className="w-20 h-20 border-4 border-hotpinku border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-        <p className="text-dark font-poppins font-semibold text-xl">Loading your syllabus...</p>
+      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-lg px-4">
+        <PawfessorLoading 
+          variant="purple" 
+          strokeColor="#7A47FF"
+          size="large"
+        />
       </div>
     </div>
   );
