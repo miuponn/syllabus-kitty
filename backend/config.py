@@ -43,6 +43,11 @@ class Settings(BaseSettings):
     max_upload_size_mb: int = 25
     upload_dir: str = "./uploads"
     
+    # ElevenLabs Configuration
+    elevenlabs_api_key: str = ""
+    elevenlabs_agent_id: str = ""
+    elevenlabs_voice_id: str = "21m00Tcm4TlvDq8ikWAM"  # Default voice
+    
     @property
     def allowed_origins_list(self) -> List[str]:
         """Parse comma-separated origins into a list"""
@@ -56,6 +61,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"  # Allow extra env vars not defined in settings
 
 
 # Global settings instance
