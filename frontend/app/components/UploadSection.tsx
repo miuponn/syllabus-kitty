@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import PawfessorLoading from './PawfessorLoading';
+import { createClient } from '@/app/lib/supabaseClient';
 
 interface UploadState {
   uploading: boolean;
@@ -90,26 +91,64 @@ export default function UploadSection() {
     try {
       const { supabaseToken, googleAccessToken, googleRefreshToken } = await getTokens();
       
-      console.log('Sending tokens to backend:', {
+      console.log('Tokens available:', {
         supabase: supabaseToken ? '✓' : '✗',
         googleAccess: googleAccessToken ? '✓' : '✗',
         googleRefresh: googleRefreshToken ? '✓' : '✗',
       });
       
+      // Step 1: Upload PDF to Supabase Storage
+      const supabase = createClient();
+      const session = await supabase.auth.getSession();
+      const userId = session.data.session?.user?.id;
+      
+      if (!userId) {
+        throw new Error('Please sign in to upload files');
+      }
+      
+      // Generate unique storage path
+      const timestamp = Date.now();
+      const randomStr = Math.random().toString(36).substring(7);
+      const storagePath = `${userId}/${timestamp}_${randomStr}.pdf`;
+      
+      console.log('Uploading PDF to Supabase Storage...');
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('syllabi')
+        .upload(storagePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+      
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw new Error(`Failed to upload PDF: ${uploadError.message}`);
+      }
+      
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('syllabi')
+        .getPublicUrl(storagePath);
+      
+      const pdfUrl = urlData.publicUrl;
+      console.log('PDF uploaded successfully:', pdfUrl);
+      
+      // Step 2: Send PDF to backend for AI processing first
+      // Backend will return the file_id it uses
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('pdf_url', pdfUrl);
 
       const headers: HeadersInit = {};
       
-      // Send Supabase JWT as standard Authorization header
       if (supabaseToken) {
         headers['Authorization'] = `Bearer ${supabaseToken}`;
       }
       
-      // Send Google tokens for Calendar API access
       if (googleAccessToken) headers['X-Google-Access-Token'] = googleAccessToken;
       if (googleRefreshToken) headers['X-Google-Refresh-Token'] = googleRefreshToken;
 
+      setUploadState(prev => ({ ...prev, processing: true }));
+      
       const response = await fetch('http://localhost:8000/api/syllabus/upload', {
         method: 'POST',
         headers,
@@ -123,6 +162,24 @@ export default function UploadSection() {
 
       const result = await response.json();
       
+      // Step 3: Now insert into sillabi table with the file_id from backend
+      const backendFileId = result.file_id || result.syllabus_id;
+      if (backendFileId) {
+        const { error: insertError } = await supabase
+          .from('sillabi')
+          .insert({
+            file_id: backendFileId,
+            pdf_url: pdfUrl,
+            course_name: result.course_name || file.name.replace('.pdf', ''),
+          });
+        
+        if (insertError) {
+          console.error('Error inserting into sillabi:', insertError);
+        } else {
+          console.log('PDF info saved to database with file_id:', backendFileId);
+        }
+      }
+      
       setUploadState({
         uploading: false,
         processing: false,
@@ -133,7 +190,8 @@ export default function UploadSection() {
 
       downloadJSON(result, file.name);
 
-      const syllabusId = result.file_id || result.id || Date.now().toString();
+      // Redirect to syllabus view page using backend's file_id
+      const syllabusId = result.file_id || result.syllabus_id;
       setTimeout(() => {
         router.push(`/syllabus/${syllabusId}`);
       }, 1500);
