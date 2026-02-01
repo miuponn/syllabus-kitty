@@ -13,6 +13,26 @@ from email.mime.multipart import MIMEMultipart
 
 logger = logging.getLogger(__name__)
 
+# Brand colors from Syllabus Kitty design system
+COLORS = {
+    'pink_body': '#C76585',
+    'blue_body': '#6c82ff',
+    'dark': '#3647A9',
+    'blue_lines': '#4558C5',
+    'medium_rose': '#D68397',
+    'item': '#FFC1D0',
+    'bubbles': '#8deef5',
+    'hotpink': '#FC76FF',
+    'lime': '#B3E97F',
+    'blueberry': '#BDDBFF',
+    'lemon': '#F7E799',
+    'plum': '#CFC4EC',
+    'purple_body': '#8E8AE2',
+    'persimmon': '#738AFF',
+    'orange': '#FEC192',
+    'glow_pink': '#FFB2E1',
+}
+
 
 class EmailService:
     """Service for sending email notifications using Gmail API"""
@@ -53,72 +73,110 @@ class EmailService:
             # Build Gmail service with user's credentials
             service = build('gmail', 'v1', credentials=google_credentials)
             
-            # Create email content
-            emoji_map = {
-                'assignment': '📝',
-                'exam': '📝', 
-                'quiz': '❓',
-                'project': '🚀',
-                'midterm': '📝',
-                'final': '📝',
-                'lab': '🧪',
-                'presentation': '🎤'
-            }
-            
-            emoji = emoji_map.get(event_type.lower(), '📅')
-            
+            # Determine urgency colors based on days until
             if days_until == 0:
                 urgency = "TODAY!"
-                urgency_color = "#ff0000"
+                urgency_color = COLORS['pink_body']
+                accent_color = COLORS['item']
+                bg_gradient = f"linear-gradient(135deg, {COLORS['item']} 0%, {COLORS['orange']} 100%)"
             elif days_until == 1:
                 urgency = "tomorrow!"
-                urgency_color = "#ff4444"
+                urgency_color = COLORS['medium_rose']
+                accent_color = COLORS['item']
+                bg_gradient = f"linear-gradient(135deg, {COLORS['item']} 0%, {COLORS['lemon']} 100%)"
             elif days_until <= 3:
                 urgency = f"in {days_until} days!"
-                urgency_color = "#ff8800"
+                urgency_color = COLORS['purple_body']
+                accent_color = COLORS['plum']
+                bg_gradient = f"linear-gradient(135deg, {COLORS['plum']} 0%, {COLORS['blueberry']} 100%)"
             elif days_until <= 7:
                 urgency = f"in {days_until} days"
-                urgency_color = "#ffaa00"
+                urgency_color = COLORS['blue_body']
+                accent_color = COLORS['blueberry']
+                bg_gradient = f"linear-gradient(135deg, {COLORS['blueberry']} 0%, {COLORS['bubbles']} 100%)"
             else:
                 urgency = f"in {days_until} days"
-                urgency_color = "#0066cc"
+                urgency_color = COLORS['dark']
+                accent_color = COLORS['bubbles']
+                bg_gradient = f"linear-gradient(135deg, {COLORS['bubbles']} 0%, {COLORS['lime']} 100%)"
             
-            subject = f"{emoji} {course_name} - {event_title} {urgency}"
+            subject = f"Syllabus Kitty - {course_name}: {event_title} {urgency}"
             
-            # Create HTML email body
+            # Create HTML email body with brand styling
             html_body = f"""
             <html>
-                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <head>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+                    </style>
+                </head>
+                <body style="font-family: 'Nunito', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #faf5ff;">
                     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                        <h2 style="color: {urgency_color};">{emoji} Course Reminder</h2>
                         
-                        <p>Hi {user_name},</p>
-                        
-                        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid {urgency_color};">
-                            <h3 style="margin: 0 0 10px 0; color: {urgency_color};">
-                                {event_title}
-                            </h3>
-                            <p style="margin: 5px 0;"><strong>Course:</strong> {course_name}</p>
-                            <p style="margin: 5px 0;"><strong>Due:</strong> {event_date}</p>
-                            <p style="margin: 5px 0;"><strong>Type:</strong> {event_type.title()}</p>
-                            <p style="margin: 15px 0 5px 0; font-size: 18px; color: {urgency_color};">
-                                <strong>Coming up {urgency}</strong>
+                        <!-- Header with gradient -->
+                        <div style="background: linear-gradient(135deg, {COLORS['hotpink']} 0%, {COLORS['medium_rose']} 100%); border-radius: 20px 20px 0 0; padding: 30px 20px; text-align: center;">
+                            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                Syllabus Kitty
+                            </h1>
+                            <p style="color: white; margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">
+                                Your friendly course reminder
                             </p>
                         </div>
                         
-                        {f'<div style="margin: 15px 0; padding: 15px; background-color: #e8f4f8; border-radius: 5px;"><strong>Additional Info:</strong><br>{additional_info}</div>' if additional_info else ''}
-                        
-                        <div style="margin: 30px 0;">
-                            <p>🍀 Good luck with your {event_type}!</p>
-                            <p style="font-size: 14px; color: #666;">
-                                This is an automated reminder from Syllabus Kitty. 
+                        <!-- Main content card -->
+                        <div style="background: white; padding: 30px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 20px rgba(252, 118, 255, 0.15);">
+                            
+                            <p style="font-size: 16px; color: {COLORS['dark']};">Hi {user_name},</p>
+                            
+                            <!-- Event card -->
+                            <div style="background: {bg_gradient}; padding: 25px; border-radius: 16px; margin: 20px 0; border: 2px solid {accent_color};">
+                                <h2 style="margin: 0 0 15px 0; color: {COLORS['dark']}; font-size: 22px; font-weight: 700;">
+                                    {event_title}
+                                </h2>
+                                
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                    <div style="background: white; padding: 10px 15px; border-radius: 10px; flex: 1; min-width: 150px;">
+                                        <p style="margin: 0; font-size: 12px; color: {COLORS['blue_body']}; font-weight: 600;">COURSE</p>
+                                        <p style="margin: 5px 0 0 0; font-size: 14px; color: {COLORS['dark']}; font-weight: 600;">{course_name}</p>
+                                    </div>
+                                    <div style="background: white; padding: 10px 15px; border-radius: 10px; flex: 1; min-width: 150px;">
+                                        <p style="margin: 0; font-size: 12px; color: {COLORS['blue_body']}; font-weight: 600;">DUE DATE</p>
+                                        <p style="margin: 5px 0 0 0; font-size: 14px; color: {COLORS['dark']}; font-weight: 600;">{event_date}</p>
+                                    </div>
+                                    <div style="background: white; padding: 10px 15px; border-radius: 10px; flex: 1; min-width: 150px;">
+                                        <p style="margin: 0; font-size: 12px; color: {COLORS['blue_body']}; font-weight: 600;">TYPE</p>
+                                        <p style="margin: 5px 0 0 0; font-size: 14px; color: {COLORS['dark']}; font-weight: 600;">{event_type.title()}</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Urgency badge -->
+                                <div style="margin-top: 20px; text-align: center;">
+                                    <span style="background: {urgency_color}; color: white; padding: 10px 25px; border-radius: 25px; font-size: 16px; font-weight: 700; display: inline-block; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                                        Coming up {urgency}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            {f'<div style="margin: 20px 0; padding: 20px; background: linear-gradient(135deg, {COLORS["lemon"]} 0%, {COLORS["lime"]} 100%); border-radius: 12px; border-left: 4px solid {COLORS["blue_body"]};"><p style="margin: 0; font-size: 12px; color: {COLORS["blue_body"]}; font-weight: 600;">ADDITIONAL INFO</p><p style="margin: 10px 0 0 0; color: {COLORS["dark"]};">{additional_info}</p></div>' if additional_info else ''}
+                            
+                            <!-- Encouragement section -->
+                            <div style="margin: 25px 0; padding: 20px; background: linear-gradient(135deg, {COLORS['plum']} 0%, {COLORS['blueberry']} 100%); border-radius: 12px; text-align: center;">
+                                <p style="margin: 0; font-size: 16px; color: {COLORS['dark']}; font-weight: 600;">
+                                    Good luck with your {event_type}! You've got this!
+                                </p>
+                            </div>
+                            
+                            <p style="font-size: 13px; color: {COLORS['blue_body']}; text-align: center; margin-top: 25px;">
+                                This is an automated reminder from Syllabus Kitty.
                             </p>
                         </div>
                         
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                        <p style="font-size: 12px; color: #888; text-align: center;">
-                            🐱 Syllabus Kitty - Never miss an assignment again!
-                        </p>
+                        <!-- Footer -->
+                        <div style="text-align: center; padding: 20px; margin-top: 10px;">
+                            <p style="font-size: 12px; color: {COLORS['purple_body']}; margin: 0;">
+                                Syllabus Kitty - Never miss an assignment again!
+                            </p>
+                        </div>
                     </div>
                 </body>
             </html>
@@ -132,21 +190,22 @@ class EmailService:
             
             # Create plain text version
             text_body = f"""
-{emoji} {course_name} Reminder
+Syllabus Kitty - Course Reminder
 
 Hi {user_name},
 
 {event_title} is {urgency}
-📅 {event_date}
-📚 {course_name}
-Type: {event_type.title()}
+
+COURSE: {course_name}
+DUE: {event_date}
+TYPE: {event_type.title()}
 
 {additional_info}
 
-Good luck with your {event_type}! 🍀
+Good luck with your {event_type}! You've got this!
 
 ---
-🐱 Syllabus Kitty - Never miss an assignment again!
+Syllabus Kitty - Never miss an assignment again!
             """.strip()
             
             # Attach parts

@@ -13,6 +13,8 @@ import EditAssessmentModal from '../../components/EditAssessmentModal';
 import EditEventModal from '../../components/EditEventModal';
 import AddAssessmentModal from '../../components/AddAssessmentModal';
 import AddEventModal from '../../components/AddEventModal';
+import PawfessorChat from '../../components/PawfessorChat';
+import CalendarSuccessModal from '../../components/CalendarSuccessModal';
 
 // Helper function to extract day of week from recurrence rule
 function parseDayFromRRule(recurrence?: string[]): string {
@@ -75,6 +77,13 @@ export default function SyllabusPage() {
   const [assessments, setAssessments] = useState<any[]>([]);
   const [recurringEvents, setRecurringEvents] = useState<any[]>([]);
   const [isAddingToCalendar, setIsAddingToCalendar] = useState(false);
+  
+  // Calendar success modal state
+  const [calendarSuccessModal, setCalendarSuccessModal] = useState<{
+    isOpen: boolean;
+    eventsAdded: number;
+    courseName: string;
+  }>({ isOpen: false, eventsAdded: 0, courseName: '' });
   
   // Simplify PDF state
   const [isSimplifying, setIsSimplifying] = useState(false);
@@ -261,7 +270,13 @@ export default function SyllabusPage() {
       }
       
       const result = await response.json();
-      alert(`Successfully added ${result.events_added || 'all'} events to Google Calendar!`);
+      // Show success modal instead of alert
+      const totalEvents = assessments.length + recurringEvents.length;
+      setCalendarSuccessModal({
+        isOpen: true,
+        eventsAdded: result.events_added || totalEvents,
+        courseName: calendarJson?.course_name || 'your course',
+      });
     } catch (error) {
       console.error('Error adding to calendar:', error);
       alert(error instanceof Error ? error.message : 'Failed to add events to calendar');
@@ -939,6 +954,17 @@ export default function SyllabusPage() {
         onClose={() => setAddEventModalOpen(false)}
         onAdd={handleAddEvent}
       />
+
+      {/* Calendar Success Modal */}
+      <CalendarSuccessModal
+        isOpen={calendarSuccessModal.isOpen}
+        onClose={() => setCalendarSuccessModal({ isOpen: false, eventsAdded: 0, courseName: '' })}
+        eventsAdded={calendarSuccessModal.eventsAdded}
+        courseName={calendarSuccessModal.courseName}
+      />
+
+      {/* Pawfessor AI Chat Assistant */}
+      <PawfessorChat syllabusId={syllabusId} />
     </div>
   );
 }
