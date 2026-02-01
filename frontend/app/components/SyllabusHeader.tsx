@@ -8,6 +8,7 @@ interface SyllabusHeaderProps {
   onScreenReader?: () => void;
   onSimplify?: () => void;
   isTranslating?: boolean;
+  isSimplifying?: boolean;
   hasSimplified?: boolean;
 }
 
@@ -16,6 +17,7 @@ export default function SyllabusHeader({
   onScreenReader, 
   onSimplify,
   isTranslating = false,
+  isSimplifying = false,
   hasSimplified = false,
 }: SyllabusHeaderProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -192,30 +194,69 @@ export default function SyllabusHeader({
             Screen Reader
           </button>
 
-          {/* Simplify Button - Orang color */}
+          {/* Simplify Button - Orang color with rainbow loading state */}
           <button
             onClick={onSimplify}
-            className="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 text-sm sm:text-base"
-            style={getButtonStyle('var(--orang)')}
-            onMouseEnter={(e) => handleButtonHover(e, 'var(--orang)')}
-            onMouseLeave={(e) => handleButtonLeave(e, 'var(--orang)')}
-            onMouseDown={handleButtonActive}
-            onMouseUp={(e) => handleButtonHover(e, 'var(--orang)')}
+            disabled={isSimplifying}
+            className={`px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 text-sm sm:text-base relative overflow-hidden ${isSimplifying ? 'simplify-loading' : ''}`}
+            style={isSimplifying ? {
+              fontFamily: 'Poppins, sans-serif',
+              fontWeight: 600,
+              borderRadius: 'var(--radius-md)',
+              border: 'none',
+              color: 'white',
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+              background: 'linear-gradient(90deg, #FC9FBE, #FEC192, #F7E799, #B3E97F, #C0FFF4, #FC9FBE)',
+              backgroundSize: '200% 100%',
+              cursor: 'wait',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              animation: 'rainbow-slide 2s linear infinite',
+              minWidth: '120px', // Fixed minimum width to prevent shrinking
+            } : getButtonStyle('var(--orang)')}
+            onMouseEnter={(e) => !isSimplifying && handleButtonHover(e, 'var(--orang)')}
+            onMouseLeave={(e) => !isSimplifying && handleButtonLeave(e, 'var(--orang)')}
+            onMouseDown={(e) => !isSimplifying && handleButtonActive(e)}
+            onMouseUp={(e) => {
+              if (!isSimplifying) {
+                // Reset to default state, not hover
+                handleButtonLeave(e, 'var(--orang)');
+              }
+            }}
           >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-            </svg>
-            Simplify
+            {isSimplifying ? (
+              <span style={{ color: 'white' }}>Simplifying...</span>
+            ) : (
+              <>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                </svg>
+                Simplify
+              </>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Wiggle animation keyframes */}
+      {/* Animations */}
       <style jsx>{`
         @keyframes wiggle {
           0%, 100% { transform: rotate(0deg); }
           25% { transform: rotate(-3deg); }
           75% { transform: rotate(3deg); }
+        }
+        
+        @keyframes rainbow-slide {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 200% 50%; }
+        }
+        
+        .simplify-loading {
+          box-shadow: 0 0 20px rgba(255, 107, 107, 0.4), 
+                      0 0 30px rgba(78, 205, 196, 0.3),
+                      0 0 40px rgba(167, 139, 250, 0.2);
         }
       `}</style>
     </div>

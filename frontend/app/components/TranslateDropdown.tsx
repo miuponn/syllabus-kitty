@@ -106,13 +106,10 @@ export default function TranslateDropdown({
           btn.style.boxShadow = 'none';
         }}
       >
-        {/* Globe/Earth Icon */}
-        <img 
-          src="/assets/images/earth.png" 
-          alt="" 
-          className="w-4 h-4 sm:w-5 sm:h-5"
-          style={{ filter: 'brightness(0) invert(1)' }}
-        />
+        {/* Translate Icon */}
+        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+        </svg>
         {isTranslating ? 'Translating...' : 'Translate'}
         <svg 
           className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -207,17 +204,27 @@ export default function TranslateDropdown({
             <button
               onClick={handleTranslateClick}
               disabled={!selectedLanguage || !hasSimplified || isTranslating}
-              className="w-full py-2.5 text-sm font-semibold"
+              className={`w-full py-2.5 text-sm font-semibold ${isTranslating ? 'translate-loading' : ''}`}
               style={{
                 fontFamily: 'Poppins, sans-serif',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: selectedLanguage && hasSimplified ? 'var(--bubbles)' : '#d1d5db',
+                background: isTranslating 
+                  ? 'linear-gradient(90deg, #FC9FBE, #FEC192, #F7E799, #B3E97F, #C0FFF4, #FC9FBE)'
+                  : selectedLanguage && hasSimplified 
+                    ? 'var(--bubbles)' 
+                    : '#d1d5db',
+                backgroundSize: isTranslating ? '200% 100%' : undefined,
+                animation: isTranslating ? 'rainbow-slide 2s linear infinite' : undefined,
                 color: 'white',
-                cursor: selectedLanguage && hasSimplified ? 'pointer' : 'not-allowed',
+                cursor: selectedLanguage && hasSimplified && !isTranslating ? 'pointer' : isTranslating ? 'wait' : 'not-allowed',
                 transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
               }}
               onMouseEnter={(e) => {
-                if (selectedLanguage && hasSimplified) {
+                if (selectedLanguage && hasSimplified && !isTranslating) {
                   e.currentTarget.style.filter = 'brightness(1.1)';
                 }
               }}
@@ -225,16 +232,31 @@ export default function TranslateDropdown({
                 e.currentTarget.style.filter = 'brightness(1)';
               }}
             >
-              {isTranslating 
-                ? 'Generating PDF...' 
-                : selectedLanguage 
-                  ? `Download ${SUPPORTED_LANGUAGES[selectedLanguage]} PDF`
-                  : 'Select a language'
-              }
+              {isTranslating ? (
+                <span>Translating...</span>
+              ) : selectedLanguage ? (
+                `Download ${SUPPORTED_LANGUAGES[selectedLanguage]} PDF`
+              ) : (
+                'Select a language'
+              )}
             </button>
           </div>
         </div>
       )}
+      
+      {/* Animations */}
+      <style jsx>{`
+        @keyframes rainbow-slide {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 200% 50%; }
+        }
+        
+        .translate-loading {
+          box-shadow: 0 0 15px rgba(255, 107, 107, 0.3), 
+                      0 0 20px rgba(78, 205, 196, 0.2),
+                      0 0 25px rgba(167, 139, 250, 0.15);
+        }
+      `}</style>
     </div>
   );
 }
