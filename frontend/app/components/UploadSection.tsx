@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import PawfessorLoading from './PawfessorLoading';
 
 interface UploadState {
   uploading: boolean;
@@ -53,7 +54,6 @@ export default function UploadSection() {
   };
 
   const handleFile = async (file: File) => {
-    // Validate file type
     if (!file.name.toLowerCase().endsWith('.pdf')) {
       setUploadState({
         uploading: false,
@@ -65,7 +65,6 @@ export default function UploadSection() {
       return;
     }
 
-    // Validate file size (25MB max)
     const maxSize = 25 * 1024 * 1024;
     if (file.size > maxSize) {
       setUploadState({
@@ -78,7 +77,6 @@ export default function UploadSection() {
       return;
     }
 
-    // Reset state and start upload
     setUploadState({
       uploading: true,
       processing: false,
@@ -111,15 +109,12 @@ export default function UploadSection() {
         result: result,
       });
 
-      // Download JSON file
       downloadJSON(result, file.name);
 
-      // Redirect to syllabus view page
-      // Generate a temporary ID or use the one from the backend if available
       const syllabusId = result.file_id || result.id || Date.now().toString();
       setTimeout(() => {
         router.push(`/syllabus/${syllabusId}`);
-      }, 1500); 
+      }, 1500);
 
     } catch (error) {
       setUploadState({
@@ -150,14 +145,21 @@ export default function UploadSection() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       {/* Upload Area */}
       <div
-        className={`relative border-4 border-dashed rounded-3xl p-12 transition-all duration-200 ${
+        className={`relative border-[2] rounded-4xl p-8 sm:p-12 transition-all duration-500 ease-in-out group ${
           dragActive
-            ? 'border-purple-500 bg-purple-50/50'
-            : 'border-gray-300 bg-white/50 backdrop-blur-sm'
-        } ${uploadState.uploading ? 'pointer-events-none opacity-60' : ''}`}
+            ? 'border-solid scale-[1.03]'
+            : 'border-dotted'
+        } ${
+          uploadState.uploading ? 'pointer-events-none' : 'hover:scale-[1.03] hover:border-solid'
+        }`}
+        style={{ 
+          background: uploadState.uploading ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.7)',
+          borderWidth: 'min(5px, 0.5vw)',
+          borderColor: '#6C82FF'
+        }}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -173,40 +175,65 @@ export default function UploadSection() {
 
         <div className="text-center">
           {uploadState.uploading ? (
-            <div className="space-y-4">
-              <div className="text-6xl animate-bounce">📄</div>
-              <p className="text-xl font-semibold text-purple-600">
-                {uploadState.processing ? 'Processing your syllabus...' : 'Uploading...'}
-              </p>
-              {uploadState.processing && (
-                <p className="text-sm text-gray-500">
-                  This may take a moment...
-                </p>
-              )}
-              <div className="w-full max-w-md mx-auto bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div className="space-y-6">
+              <PawfessorLoading variant="pink" strokeColor="#C76585" />
+              <div className="w-full max-w-md mx-auto bg-white/50 rounded-full h-4 overflow-hidden shadow-inner">
                 <div
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-300 animate-pulse"
-                  style={{ width: '75%' }}
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{ 
+                    width: '75%',
+                    background: 'linear-gradient(to right, #FFC1D0, #FEC192, #F7E799, #B3E97F, #8deef5)'
+                  }}
                 />
               </div>
             </div>
           ) : (
-            <div className="space-y-6">
-              <div className="text-7xl">📚</div>
-              <div className="space-y-2">
-                <p className="text-2xl font-semibold text-gray-700">
+            <div className="space-y-6 sm:space-y-8">
+              {/* Paw Icon with hover effect */}
+              <div className="animate-point-down relative group/paw w-20 h-20 sm:w-24 sm:h-24 mx-auto">
+                <img 
+                  src="/assets/images/paw 4.svg" 
+                  alt="Drop here" 
+                  className="w-full h-full absolute inset-0 transition-opacity duration-300 group-hover/paw:opacity-0"
+                />
+                <img 
+                  src="/assets/images/paw 4-hover.svg" 
+                  alt="Drop here" 
+                  className="w-full h-full absolute inset-0 transition-opacity duration-300 opacity-0 group-hover/paw:opacity-100"
+                />
+              </div>
+
+              <div className="space-y-2 sm:space-y-3">
+                <p 
+                  className="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight"
+                  style={{ fontFamily: 'Chewie, display', color: '#C76585' }}
+                >
                   Drop your syllabus here
                 </p>
-                <p className="text-gray-500">or</p>
+                <p 
+                  className="text-xl sm:text-2xl font-semibold"
+                  style={{ fontFamily: 'Urbanist, sans-serif', color: 'rgba(214, 131, 151, 0.8)' }}
+                >
+                  or
+                </p>
               </div>
+
               <button
                 onClick={onButtonClick}
-                className="px-8 py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white text-lg font-semibold rounded-full hover:shadow-xl hover:scale-105 transition-all duration-200"
+                className="gradient-button"
+                style={{ 
+                  '--gradient': 'linear-gradient(to right, #FB9DC1, #FFAC95)',
+                  fontFamily: 'Poppins, sans-serif'
+                } as any}
               >
                 Choose PDF File
               </button>
-              <p className="text-sm text-gray-400 mt-4">
-                Maximum file size: 25MB
+              
+              <p 
+                className="text-xs sm:text-sm font-extrabold mt-4"
+                style={{ fontFamily: 'Urbanist, sans-serif', color: 'rgba(214, 131, 151, 0.8)' }}
+              >
+                Maximum file size: 25 MB
               </p>
             </div>
           )}
@@ -215,12 +242,26 @@ export default function UploadSection() {
 
       {/* Error Message */}
       {uploadState.error && (
-        <div className="mt-6 p-6 bg-red-50 border-2 border-red-200 rounded-2xl">
+        <div 
+          className="mt-6 p-6 rounded-2xl animate-wiggle"
+          style={{
+            background: 'rgba(255, 255, 255, 0.7)',
+            backdropFilter: 'blur(10px)',
+            border: '2px solid #FC76FF'
+          }}
+        >
           <div className="flex items-start gap-3">
-            <span className="text-3xl">❌</span>
+            <span className="text-4xl">❌</span>
             <div>
-              <p className="font-semibold text-red-800 mb-1">Upload Error</p>
-              <p className="text-red-600">{uploadState.error}</p>
+              <p 
+                className="font-bold mb-1"
+                style={{ fontFamily: 'Poppins, sans-serif', color: '#C76585' }}
+              >
+                Oops!
+              </p>
+              <p style={{ fontFamily: 'Urbanist, sans-serif', color: '#D68397' }}>
+                {uploadState.error}
+              </p>
             </div>
           </div>
         </div>
@@ -228,50 +269,50 @@ export default function UploadSection() {
 
       {/* Success Message */}
       {uploadState.result && (
-        <div className="mt-6 p-6 bg-green-50 border-2 border-green-200 rounded-2xl">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">✅</span>
+        <div className="mt-6 p-8 frosted-glass border-2 border-lime rounded-2xl kawaii-shadow">
+          <div className="flex items-start gap-4">
+            <span className="text-5xl animate-bounce">✨</span>
             <div className="flex-1">
-              <p className="font-semibold text-green-800 mb-2">
-                Syllabus extracted successfully!
+              <p className="font-poppins font-bold text-dark text-xl mb-2">
+                Success! Your syllabus is ready! 🎉
               </p>
-              <p className="text-green-600 mb-4">
+              <p className="text-dark/70 mb-4 font-urbanist">
                 JSON file has been downloaded automatically.
               </p>
               
               {/* Preview of extracted data */}
               {uploadState.result.extracted_data && (
-                <div className="mt-4 space-y-3">
-                  <h3 className="font-semibold text-gray-700">Quick Preview:</h3>
+                <div className="mt-6 space-y-4">
+                  <h3 className="font-poppins font-bold text-dark">Quick Preview:</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {uploadState.result.extracted_data.extracted_sections?.title?.[0] && (
-                      <div className="bg-white/70 p-3 rounded-lg">
-                        <p className="text-xs text-gray-500 mb-1">Course Title</p>
-                        <p className="font-medium text-gray-800">
+                      <div className="bg-white/60 p-4 rounded-xl border border-hotpinku/20">
+                        <p className="text-xs text-dark/50 mb-1 font-urbanist">Course Title</p>
+                        <p className="font-poppins font-semibold text-dark">
                           {uploadState.result.extracted_data.extracted_sections.title[0].text}
                         </p>
                       </div>
                     )}
                     {uploadState.result.extracted_data.extracted_sections?.code?.[0] && (
-                      <div className="bg-white/70 p-3 rounded-lg">
-                        <p className="text-xs text-gray-500 mb-1">Course Code</p>
-                        <p className="font-medium text-gray-800">
+                      <div className="bg-white/60 p-4 rounded-xl border border-blue-body/20">
+                        <p className="text-xs text-dark/50 mb-1 font-urbanist">Course Code</p>
+                        <p className="font-poppins font-semibold text-dark">
                           {uploadState.result.extracted_data.extracted_sections.code[0].text}
                         </p>
                       </div>
                     )}
                     {uploadState.result.extracted_data.institution?.name && (
-                      <div className="bg-white/70 p-3 rounded-lg">
-                        <p className="text-xs text-gray-500 mb-1">Institution</p>
-                        <p className="font-medium text-gray-800">
+                      <div className="bg-white/60 p-4 rounded-xl border border-purple-body/20">
+                        <p className="text-xs text-dark/50 mb-1 font-urbanist">Institution</p>
+                        <p className="font-poppins font-semibold text-dark">
                           {uploadState.result.extracted_data.institution.name}
                         </p>
                       </div>
                     )}
                     {uploadState.result.extracted_data.date && (
-                      <div className="bg-white/70 p-3 rounded-lg">
-                        <p className="text-xs text-gray-500 mb-1">Term</p>
-                        <p className="font-medium text-gray-800">
+                      <div className="bg-white/60 p-4 rounded-xl border border-medium-rose/20">
+                        <p className="text-xs text-dark/50 mb-1 font-urbanist">Term</p>
+                        <p className="font-poppins font-semibold text-dark">
                           {uploadState.result.extracted_data.date.term} {uploadState.result.extracted_data.date.year}
                         </p>
                       </div>
@@ -283,33 +324,6 @@ export default function UploadSection() {
           </div>
         </div>
       )}
-
-      {/* Info Cards */}
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border-2 border-purple-100">
-          <div className="text-4xl mb-3">🤖</div>
-          <h3 className="font-semibold text-gray-800 mb-2">AI-Powered</h3>
-          <p className="text-sm text-gray-600">
-            Uses Google Gemini AI to intelligently extract course information
-          </p>
-        </div>
-        
-        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border-2 border-pink-100">
-          <div className="text-4xl mb-3">📅</div>
-          <h3 className="font-semibold text-gray-800 mb-2">Calendar Ready</h3>
-          <p className="text-sm text-gray-600">
-            Structured data ready for Google Calendar integration
-          </p>
-        </div>
-        
-        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border-2 border-orange-100">
-          <div className="text-4xl mb-3">💾</div>
-          <h3 className="font-semibold text-gray-800 mb-2">JSON Export</h3>
-          <p className="text-sm text-gray-600">
-            Get a clean JSON file with all extracted course details
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
