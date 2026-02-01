@@ -6,6 +6,7 @@ import { useAuth } from '@/app/providers/AuthProvider';
 import { createClient } from '@/app/lib/supabaseClient';
 import PDFViewer from '../../components/PDFViewer';
 import SyllabusHeader from '../../components/SyllabusHeader';
+import SyllabusLoading from '../../components/SyllabusLoading';
 import AssessmentsList from '../../components/AssessmentsList';
 import RecurringEventsList from '../../components/RecurringEventsList';
 import EditAssessmentModal from '../../components/EditAssessmentModal';
@@ -540,71 +541,217 @@ export default function SyllabusPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-50 via-pink-50 to-orange-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading syllabus...</p>
-        </div>
-      </div>
-    );
+    return <SyllabusLoading />;
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-orange-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header with Menu Bar */}
-        <SyllabusHeader
-          onTranslate={handleTranslate}
-          onScreenReader={handleScreenReader}
-          onSimplify={handleSimplify}
+    <div className="min-h-screen relative pt-16 sm:pt-20" style={{ background: 'var(--gradient-page)', backgroundAttachment: 'fixed' }}>
+      {/* Floating decorative elements - background only */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {/* Animated blurs - varied colors */}
+        <img 
+          src="/assets/images/blur.svg" 
+          alt="" 
+          className="absolute top-20 left-10 w-64 h-64 opacity-50 animate-blob"
+          style={{ filter: 'hue-rotate(0deg)' }}
+        />
+        <img 
+          src="/assets/images/blur2.svg" 
+          alt="" 
+          className="absolute top-40 right-20 w-80 h-80 opacity-40 animate-blob" 
+          style={{ animationDelay: '2s', filter: 'hue-rotate(30deg)' }}
+        />
+        <img 
+          src="/assets/images/blur.svg" 
+          alt="" 
+          className="absolute top-[30%] left-1/3 w-72 h-72 opacity-45 animate-blob" 
+          style={{ animationDelay: '4s', filter: 'hue-rotate(-20deg)' }}
+        />
+        <img 
+          src="/assets/images/blur2.svg" 
+          alt="" 
+          className="absolute top-[50%] right-1/4 w-96 h-96 opacity-35 animate-blob" 
+          style={{ animationDelay: '1s', filter: 'hue-rotate(60deg)' }}
+        />
+        <img 
+          src="/assets/images/blur.svg" 
+          alt="" 
+          className="absolute top-[70%] left-20 w-80 h-80 opacity-40 animate-blob" 
+          style={{ animationDelay: '3s', filter: 'hue-rotate(45deg)' }}
+        />
+        <img 
+          src="/assets/images/blur2.svg" 
+          alt="" 
+          className="absolute top-[90%] right-10 w-64 h-64 opacity-50 animate-blob" 
+          style={{ animationDelay: '5s', filter: 'hue-rotate(-30deg)' }}
+        />
+        <img 
+          src="/assets/images/blur.svg" 
+          alt="" 
+          className="absolute top-[110%] left-1/2 w-72 h-72 opacity-45 animate-blob" 
+          style={{ animationDelay: '2.5s', filter: 'hue-rotate(90deg)' }}
+        />
+        <img 
+          src="/assets/images/blur2.svg" 
+          alt="" 
+          className="absolute top-[130%] right-1/3 w-88 h-88 opacity-35 animate-blob" 
+          style={{ animationDelay: '4.5s', filter: 'hue-rotate(15deg)' }}
         />
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: PDF Viewer */}
-          <div className="lg:col-span-1">
-            <PDFViewer pdfUrl={pdfUrl} />
-          </div>
+        {/* Flickering twinkles and circles with pink glow */}
+        <img 
+          src="/assets/images/twinkle-rough.svg" 
+          alt="" 
+          className="absolute top-32 right-16 w-10 h-10 animate-flicker opacity-70"
+          style={{ 
+            filter: 'drop-shadow(0 0 12px #FFC1D0) drop-shadow(0 0 24px #FFC1D0)',
+            animationDelay: '0s' 
+          }}
+        />
+        <img 
+          src="/assets/images/circle-rough.svg" 
+          alt="" 
+          className="absolute top-60 left-24 w-8 h-8 animate-flicker opacity-60"
+          style={{ 
+            filter: 'drop-shadow(0 0 12px #FFC1D0) drop-shadow(0 0 24px #FFC1D0)',
+            animationDelay: '1.2s' 
+          }}
+        />
+        <img 
+          src="/assets/images/twinkle-rough.svg" 
+          alt="" 
+          className="absolute top-[40%] right-32 w-12 h-12 animate-flicker opacity-65"
+          style={{ 
+            filter: 'drop-shadow(0 0 12px #FFC1D0) drop-shadow(0 0 24px #FFC1D0)',
+            animationDelay: '0.8s' 
+          }}
+        />
+        <img 
+          src="/assets/images/circle-rough.svg" 
+          alt="" 
+          className="absolute top-[55%] left-16 w-9 h-9 animate-flicker opacity-55"
+          style={{ 
+            filter: 'drop-shadow(0 0 12px #FFC1D0) drop-shadow(0 0 24px #FFC1D0)',
+            animationDelay: '2s' 
+          }}
+        />
+        <img 
+          src="/assets/images/twinkle-rough.svg" 
+          alt="" 
+          className="absolute top-[75%] right-20 w-11 h-11 animate-flicker opacity-60"
+          style={{ 
+            filter: 'drop-shadow(0 0 12px #FFC1D0) drop-shadow(0 0 24px #FFC1D0)',
+            animationDelay: '1.5s' 
+          }}
+        />
+        <img 
+          src="/assets/images/circle-rough.svg" 
+          alt="" 
+          className="absolute top-[95%] left-1/4 w-10 h-10 animate-flicker opacity-50"
+          style={{ 
+            filter: 'drop-shadow(0 0 12px #FFC1D0) drop-shadow(0 0 24px #FFC1D0)',
+            animationDelay: '2.5s' 
+          }}
+        />
+        <img 
+          src="/assets/images/twinkle-rough.svg" 
+          alt="" 
+          className="absolute top-[115%] right-1/4 w-8 h-8 animate-flicker opacity-65"
+          style={{ 
+            filter: 'drop-shadow(0 0 12px #FFC1D0) drop-shadow(0 0 24px #FFC1D0)',
+            animationDelay: '0.5s' 
+          }}
+        />
+        <img 
+          src="/assets/images/circle-rough.svg" 
+          alt="" 
+          className="absolute top-[135%] left-32 w-12 h-12 animate-flicker opacity-55"
+          style={{ 
+            filter: 'drop-shadow(0 0 12px #FFC1D0) drop-shadow(0 0 24px #FFC1D0)',
+            animationDelay: '3s' 
+          }}
+        />
+      </div>
 
-          {/* Right: Schedule & Assessments */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Add to Calendar Button */}
-            <button
-              onClick={handleAddAllToCalendar}
-              disabled={isAddingToCalendar}
-              className="w-full py-4 bg-linear-to-r from-purple-600 via-pink-500 to-orange-500 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-            >
-              {isAddingToCalendar ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Adding to Calendar...
-                </>
-              ) : (
-                <>
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Add All to Google Calendar
-                </>
-              )}
-            </button>
+      {/* Main Content */}
+      <div className="relative z-10 p-4 sm:p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header with Menu Bar */}
+          <SyllabusHeader
+            onTranslate={handleTranslate}
+            onScreenReader={handleScreenReader}
+            onSimplify={handleSimplify}
+          />
 
-            {/* Assessments */}
-            <AssessmentsList
-              assessments={assessments}
-              onEdit={handleEditAssessment}
-              onDelete={handleDeleteAssessment}
-              onAddNew={handleAddNewAssessment}
-            />
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: PDF Viewer */}
+            <div className="lg:col-span-1">
+              <PDFViewer pdfUrl={pdfUrl} jsonData={calendarJson} filename={calendarJson?.course_name} />
+            </div>
 
-            {/* Recurring Events */}
-            <RecurringEventsList
-              events={recurringEvents}
-              onEdit={handleEditEvent}
-              onDelete={handleDeleteEvent}
-              onAddNew={handleAddNewEvent}
-            />
+            {/* Right: Schedule & Assessments */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Add to Calendar Button */}
+              <button
+                onClick={handleAddAllToCalendar}
+                disabled={isAddingToCalendar}
+                className="w-full py-3 sm:py-4 md:py-5 text-base sm:text-lg md:text-xl lg:text-2xl text-white rounded-lg shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 hover:scale-105 hover:shadow-xl active:scale-98 active:brightness-110"
+                style={{ 
+                  background: 'var(--gradient-peach)',
+                  backgroundSize: '200% 200%',
+                  backgroundPosition: '0% 50%',
+                  fontFamily: 'Chewie, display',
+                  fontWeight: 600,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isAddingToCalendar) {
+                    e.currentTarget.style.animation = 'gradient-shift 2s ease infinite';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.animation = 'none';
+                }}
+              >
+                {isAddingToCalendar ? (
+                  <>
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Adding to Calendar...
+                  </>
+                ) : (
+                  <>
+                    <img 
+                      src="/assets/images/calendar2.png" 
+                      alt="" 
+                      className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 object-contain"
+                    />
+                    Add All to Google Calendar
+                    <img 
+                      src="/assets/images/sparkles.svg" 
+                      alt="" 
+                      className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7"
+                      style={{ filter: 'brightness(0) invert(1)' }}
+                    />
+                  </>
+                )}
+              </button>
+
+              {/* Assessments */}
+              <AssessmentsList
+                assessments={assessments}
+                onEdit={handleEditAssessment}
+                onDelete={handleDeleteAssessment}
+                onAddNew={handleAddNewAssessment}
+              />
+
+              {/* Recurring Events */}
+              <RecurringEventsList
+                events={recurringEvents}
+                onEdit={handleEditEvent}
+                onDelete={handleDeleteEvent}
+                onAddNew={handleAddNewEvent}
+              />
+            </div>
           </div>
         </div>
       </div>
