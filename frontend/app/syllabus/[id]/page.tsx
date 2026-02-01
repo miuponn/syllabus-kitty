@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { createClient } from '@/app/lib/supabaseClient';
 import PDFViewer from '../../components/PDFViewer';
-import MenuBar from '../../components/MenuBar';
+import SyllabusHeader from '../../components/SyllabusHeader';
 import AssessmentsList from '../../components/AssessmentsList';
 import RecurringEventsList from '../../components/RecurringEventsList';
 import EditAssessmentModal from '../../components/EditAssessmentModal';
@@ -553,8 +553,8 @@ export default function SyllabusPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-orange-50 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Menu Bar */}
-        <MenuBar
+        {/* Header with Menu Bar */}
+        <SyllabusHeader
           onTranslate={handleTranslate}
           onScreenReader={handleScreenReader}
           onSimplify={handleSimplify}
