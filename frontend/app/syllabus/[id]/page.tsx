@@ -961,9 +961,6 @@ export default function SyllabusPage() {
         eventsAdded={calendarSuccessModal.eventsAdded}
         courseName={calendarSuccessModal.courseName}
       />
-
-      {/* Pawfessor AI Chat Assistant */}
-      <PawfessorChat syllabusId={syllabusId} />
     </div>
   );
 }
