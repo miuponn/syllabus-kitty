@@ -11,6 +11,7 @@ google-api-python-client==2.149.0
 pydantic==2.9.2
 pydantic-settings==2.5.2
 aiofiles==24.1.0
+supabase==2.3.4
 
 # Email Notifications
 fastapi-mail==1.4.1
