@@ -14,6 +14,8 @@ from googleapiclient.discovery import build
 
 from services.gemini_service import gemini_service
 from services.supabase_service import supabase_service
+from services.email_notification_service import email_notification_service
+from services.gmail_notification_service import gmail_notification_service
 from config import settings
 
 
@@ -300,6 +302,7 @@ async def add_to_calendar_by_file_id(
     
     user_id = jwt_payload.get('sub')
     user_email = jwt_payload.get('email', 'Unknown')
+    user_name = jwt_payload.get('user_metadata', {}).get('full_name', 'Student')
     
     # Validate Google tokens
     if not x_google_access_token:
@@ -313,7 +316,10 @@ async def add_to_calendar_by_file_id(
         token=x_google_access_token,
         refresh_token=x_google_refresh_token,
         token_uri='https://oauth2.googleapis.com/token',
-        scopes=['https://www.googleapis.com/auth/calendar']
+        scopes=[
+            'https://www.googleapis.com/auth/calendar',
+            'https://www.googleapis.com/auth/gmail.send'
+        ]
     )
     
     try:
@@ -363,9 +369,23 @@ async def add_to_calendar_by_file_id(
             user_email
         )
         
+        # Set up Gmail notifications after calendar creation
+        try:
+            notification_result = await gmail_notification_service.setup_notifications_from_calendar_events(
+                google_credentials=google_credentials,
+                user_email=user_email,
+                user_name=user_name or "Student", 
+                events=calendar_info.get('created_events', [])
+            )
+            print(f"📧 Gmail notification setup: {notification_result['message']}")
+        except Exception as e:
+            print(f"⚠️ Failed to setup Gmail notifications: {e}")
+            notification_result = {"success": False, "message": str(e)}
+        
         result = {
             "success": True,
             "calendar_info": calendar_info,
+            "notification_info": notification_result,
             "course_name": course_name,
             "events_processed": len(google_calendar_events),
             "events_from_database": len(calendar_items),
@@ -438,7 +458,10 @@ async def create_calendar_with_selected_events(
         token=x_google_access_token,
         refresh_token=x_google_refresh_token,
         token_uri='https://oauth2.googleapis.com/token',
-        scopes=['https://www.googleapis.com/auth/calendar']
+        scopes=[
+            'https://www.googleapis.com/auth/calendar',
+            'https://www.googleapis.com/auth/gmail.send'
+        ]
     )
     
     # Extract data from request
@@ -473,7 +496,7 @@ async def create_calendar_with_selected_events(
         if selected_event_ids:
             selected_ids_set = set(map(str, selected_event_ids))
             calendar_items = [item for item in calendar_items if str(item['id']) in selected_ids_set]
-            print(f"📝 Filtered to {len(calendar_items)} selected events")
+            print(f"✅ Filtered to {len(calendar_items)} selected events")
         
         # Convert database items back to Google Calendar format
         google_calendar_events = convert_db_items_to_google_format(calendar_items)
@@ -493,9 +516,23 @@ async def create_calendar_with_selected_events(
             user_email
         )
         
+        # Set up Gmail notifications after calendar creation
+        try:
+            notification_result = await gmail_notification_service.setup_notifications_from_calendar_events(
+                google_credentials=google_credentials,
+                user_email=user_email,
+                user_name=jwt_payload.get('user_metadata', {}).get('full_name', 'Student'),
+                events=calendar_info.get('created_events', [])
+            )
+            print(f"📧 Gmail notification setup: {notification_result['message']}")
+        except Exception as e:
+            print(f"⚠️ Failed to setup Gmail notifications: {e}")
+            notification_result = {"success": False, "message": str(e)}
+        
         result = {
             "success": True,
             "calendar_info": calendar_info,
+            "notification_info": notification_result,
             "course_name": course_name,
             "events_processed": len(google_calendar_events),
             "events_from_database": len(calendar_items),
@@ -1022,6 +1059,193 @@ async def create_calendar_events(
             'fallback': True,
             'fallback_reason': str(e)
         }
+
+
+@router.get("/debug-google-scopes")
+async def debug_google_scopes(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    x_google_access_token: Optional[str] = Header(None),
+) -> JSONResponse:
+    """
+    Debug endpoint to check what Google scopes the current token has
+    """
+    if not x_google_access_token:
+        return JSONResponse(content={"error": "No Google access token provided"})
+    
+    try:
+        import requests
+        
+        # Check token info from Google
+        response = requests.get(
+            f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={x_google_access_token}"
+        )
+        
+        if response.status_code == 200:
+            token_info = response.json()
+            return JSONResponse(content={
+                "scopes": token_info.get("scope", "").split(" "),
+                "audience": token_info.get("audience"),
+                "expires_in": token_info.get("expires_in"),
+                "has_calendar": "calendar" in token_info.get("scope", ""),
+                "has_gmail": "gmail" in token_info.get("scope", "")
+            })
+        else:
+            return JSONResponse(content={"error": "Failed to validate token", "status": response.status_code})
+            
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)})
+
+
+@router.post("/{file_id}/setup-email-notifications")
+async def setup_email_notifications(
+    file_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> JSONResponse:
+    """
+    Set up email notifications for syllabus assessments
+    Uses user's email from JWT token - no additional setup needed!
+    """
+    # Verify JWT
+    jwt_payload = supabase_service.verify_jwt(credentials.credentials)
+    if not jwt_payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user_id = jwt_payload.get('sub')
+    user_email = jwt_payload.get('email')
+    user_name = jwt_payload.get('user_metadata', {}).get('full_name', 'Student')
+    
+    if not user_email:
+        raise HTTPException(status_code=400, detail="No email found in user profile")
+    
+    try:
+        result = await email_notification_service.setup_email_notifications(
+            file_id=file_id,
+            user_id=user_id,
+            user_email=user_email,
+            user_name=user_name
+        )
+        
+        return JSONResponse(status_code=200, content=result)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@router.post("/test-email")
+async def send_test_email(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> JSONResponse:
+    """Send a test email to verify setup"""
+    jwt_payload = supabase_service.verify_jwt(credentials.credentials)
+    if not jwt_payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user_email = jwt_payload.get('email')
+    user_name = jwt_payload.get('user_metadata', {}).get('full_name', 'Student')
+    
+    if not user_email:
+        raise HTTPException(status_code=400, detail="No email found in user profile")
+    
+    try:
+        result = await email_notification_service.send_immediate_test_email(
+            user_email=user_email,
+            user_name=user_name
+        )
+        
+        return JSONResponse(status_code=200, content=result)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@router.get("/{file_id}/email-notifications")
+async def get_email_notifications(
+    file_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> JSONResponse:
+    """
+    Get all email notification schedules for a syllabus
+    
+    Args:
+        file_id: The syllabus file ID
+        credentials: Supabase JWT token
+        
+    Returns:
+        List of notification schedules
+    """
+    # Verify JWT
+    jwt_payload = supabase_service.verify_jwt(credentials.credentials)
+    if not jwt_payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user_id = jwt_payload.get('sub')
+    
+    try:
+        notifications = await email_notification_service.get_user_notifications(user_id, file_id)
+        
+        return JSONResponse(
+            status_code=200,
+            content={
+                "success": True,
+                "notifications": notifications,
+                "count": len(notifications),
+                "file_id": file_id
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching notifications: {str(e)}"
+        )
+
+
+@router.post("/send-due-notifications")
+async def send_due_notifications(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    x_system_key: Optional[str] = Header(None),
+) -> JSONResponse:
+    """
+    Manually trigger sending of due email notifications
+    This endpoint can be called by a cron job or manually for testing
+    
+    Authentication options:
+    1. JWT token in Authorization header (for user requests)
+    2. System key in X-System-Key header (for automated cron jobs)
+    """
+    
+    # Allow system key authentication for cron jobs
+    if x_system_key:
+        if x_system_key != settings.system_notification_key:
+            raise HTTPException(status_code=401, detail="Invalid system key")
+    else:
+        # Require JWT token for user requests
+        jwt_payload = supabase_service.verify_jwt(credentials.credentials)
+        if not jwt_payload:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    
+    try:
+        result = await email_notification_service.send_due_email_notifications()
+        return JSONResponse(status_code=200, content=result)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@router.get("/debug-email")
+async def debug_email_config() -> JSONResponse:
+    """Debug email configuration"""
+    from services.email_service import email_service
+    
+    debug_info = {
+        "smtp_configured": bool(settings.smtp_username and settings.smtp_password),
+        "smtp_username": settings.smtp_username or "NOT SET",
+        "smtp_server": settings.smtp_server,
+        "smtp_port": settings.smtp_port,
+        "fastmail_available": hasattr(email_service, 'fastmail') and email_service.fastmail is not None,
+    }
+    
+    return JSONResponse(content=debug_info)
 
 
 @router.get("/health")
