@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     
     # Gemini API
     gemini_api_key: str
-    gemini_model_id: str = "gemini-2.0-flash-exp"
+    gemini_model_id: str = "gemini-3-flash-preview"
     
     # Supabase Configuration
     supabase_url: str

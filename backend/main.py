@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
-from routes import syllabus, calendar
+from routes import syllabus, calendar, simplify
 
 
 # Initialize FastAPI app
@@ -24,6 +24,7 @@ app.add_middleware(
 # Include routers
 app.include_router(syllabus.router)
 app.include_router(calendar.router)
+app.include_router(simplify.router)
 
 
 @app.get("/")

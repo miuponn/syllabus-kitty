@@ -55,6 +55,14 @@ syllabus-kitty/
 
 Then follow the on-screen instructions!
 
+### System Dependencies (macOS)
+
+The Simplify PDF feature requires system libraries. The setup script will attempt to install these automatically, but you can also install manually:
+
+```bash
+brew install pango gdk-pixbuf libffi
+```
+
 ### Option 2: Manual Setup
 
 #### Backend Setup
@@ -73,7 +81,8 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env and add your GEMINI_API_KEY
 
-# Run server
+# Run server (macOS - with library path for PDF generation)
+export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 python main.py
 ```
 
@@ -350,9 +359,54 @@ The system handles:
 3. Run `./setup.sh`
 4. Add Gemini API key to `backend/.env`
 5. Add Supabase credentials to `frontend/.env.local`
-6. Start backend: `cd backend && python main.py`
+6. Start backend: `cd backend && source venv/bin/activate && python main.py`
 7. Start frontend: `cd frontend && npm run dev`
 8. Upload a test syllabus PDF!
+
+## 🐛 Troubleshooting
+
+### WeasyPrint / Simplify PDF Errors (macOS)
+
+The Simplify PDF feature uses WeasyPrint which requires system libraries:
+
+**Error**: `cannot load library 'libgobject-2.0-0'` or `No module named 'weasyprint'`
+
+**Solution**:
+1. Install system dependencies:
+   ```bash
+   brew install pango gdk-pixbuf libffi
+   ```
+
+2. Set the library path when running the backend:
+   ```bash
+   export DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
+   python main.py
+   ```
+
+   Or in one line:
+   ```bash
+   DYLD_LIBRARY_PATH=/opt/homebrew/lib python main.py
+   ```
+
+### Missing Python Modules
+
+**Error**: `No module named 'markdown2'` or similar
+
+**Solution**:
+```bash
+cd backend
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Gemini Model Errors
+
+**Error**: `models/gemini-X is not found for API version v1beta`
+
+**Solution**: Check your `GEMINI_MODEL_ID` in `backend/.env`. Valid models include:
+- `gemini-2.0-flash`
+- `gemini-1.5-flash`
+- `gemini-1.5-pro`
 
 ## 📚 Documentation
 

@@ -82,6 +82,26 @@ Make sure all dependencies are installed:
 pip install -r requirements.txt
 ```
 
+### WeasyPrint / PDF Generation errors (macOS)
+
+WeasyPrint requires system libraries for PDF generation. Install them with Homebrew:
+
+```bash
+brew install pango gdk-pixbuf libffi
+```
+
+If you see "cannot load library 'libgobject-2.0-0'" errors, set the library path:
+
+```bash
+export DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
+python main.py
+```
+
+Or run in one line:
+```bash
+DYLD_LIBRARY_PATH=/opt/homebrew/lib python main.py
+```
+
 ### CORS errors
 Check that your frontend URL is in `ALLOWED_ORIGINS` in `.env`
 
