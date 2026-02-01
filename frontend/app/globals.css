@@ -1,37 +1,381 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Custom Fonts */
+@font-face {
+  font-family: 'Bingbong';
+  src: url('/assets/fonts/bingbong.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: 'Chewie';
+  src: url('/assets/fonts/chewie/ChewieDEMO-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chewie';
+  src: url('/assets/fonts/chewie/ChewieDEMO-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chewie';
+  src: url('/assets/fonts/chewie/ChewieDEMO-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chewie';
+  src: url('/assets/fonts/chewie/ChewieDEMO-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chewie';
+  src: url('/assets/fonts/chewie/ChewieDEMO-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chewie';
+  src: url('/assets/fonts/chewie/ChewieDEMO-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chewie';
+  src: url('/assets/fonts/chewie/ChewieDEMO-Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MagicalSnow';
+  src: url('/assets/fonts/MagicalSnow.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SnowDoodle';
+  src: url('/assets/fonts/SnowDoodle.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ViuCobacoba';
+  src: url('/assets/fonts/ViuCobacoba-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  /* Brand Colors - Darker text colours */
+  --pink-body: #C76585;
+  --blue-body: #6c82ff;
+  --dark: #3647A9;
+
+  /* Medium text colours */
+  --blue-lines: #4558C5;
+  --medium-rose: #D68397;
+
+  /* Solid bright colours */
+  --item: #FFC1D0;
+  --bubbles: #8deef5;
+  --hotpinku: #FC76FF;
+  --lime: #B3E97F;
+  --blueberry: #BDDBFF;
+  --lemon: #F7E799;
+  --plum: #CFC4EC;
+  --purple-body: #8E8AE2;
+  --persimmon: #738AFF;
+  --orang: #FEC192;
+
+  /* Effect (shadow, glow) colours */
+  --shadow: #5897b2;
+  --notebook-outline: #A8D5FF;
+  --glow-pinku: #FFB2E1;
+
+  /* Brand Gradients */
+  --gradient-violets: linear-gradient(to right, #638EEC, #CD7FBF);
+  --gradient-darkpinku: linear-gradient(to right, #FF78D1, #F0B4FF);
+  --gradient-fizz: linear-gradient(to right, #FCA391, #C4EAFF);
+  --gradient-soda: linear-gradient(to right, #D68397, #5EB9FF);
+  --gradient-rosette: linear-gradient(to right, #D68397, #F195FF);
+  --gradient-gem: linear-gradient(to right, #7489FF, #52F3FF);
+  --gradient-gem-dark: linear-gradient(to right, #3045bb, #24bbc6);
+  --gradient-page: linear-gradient(to bottom, #c3fff6 0%, #ffdde3 50%, #fff3cd 100%);
+  --gradient-kitty-main: linear-gradient(135deg, #faf5ff, #fce7f3, #fff7ed);
+  --gradient-primary: linear-gradient(to right, #FC76FF, #D68397);
+  --gradient-accent: linear-gradient(to right, #6C82FF, #8E8AE2);
+  --gradient-success: linear-gradient(to right, #D5FFAD, #BDDBFF);
+  --gradient-peach: linear-gradient(to right, #FB9DC1, #FFAC95);
+  --gradient-goldy: linear-gradient(to right, #ffb078, #ffdd76);
+  --gradient-cool-blue: linear-gradient(to right, #8e8ae2, #f3b9ff);
+
+  /* Shadows */
+  --shadow-glow-pink: 0 0 20px rgba(252, 118, 255, 0.5);
+  --shadow-glow-blue: 0 0 20px rgba(108, 130, 255, 0.5);
+  --shadow-glow-purple: 0 0 20px rgba(142, 138, 226, 0.5);
+  --shadow-kawaii: 0 4px 20px rgba(252, 118, 255, 0.3);
+
+  /* Border Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-full: 9999px;
+
+  /* Legacy variables */
+  --background: #ffffff;
+  --foreground: #3647a9;
 }
 
 body {
-  background: var(--background);
+  background: var(--gradient-page);
+  background-attachment: fixed;
+  min-height: 100vh;
   color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* Custom scrollbar for webkit browsers */
+/* Notebook Grid Pattern Overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(108, 130, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108, 130, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% { 
+    opacity: 0.8;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+  50% { 
+    opacity: 1;
+    filter: drop-shadow(0 0 20px currentColor);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+@keyframes point-down {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(10px); }
+}
+
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes sparkle-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes color-shift {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(30deg); }
+}
+
+@keyframes fill-slide {
+  0% { transform: scaleX(0); transform-origin: left; }
+  100% { transform: scaleX(1); transform-origin: left; }
+}
+
+@keyframes border-dance {
+  0%, 100% { border-color: rgba(252, 118, 255, 0.5); }
+  25% { border-color: rgba(108, 130, 255, 0.5); }
+  50% { border-color: rgba(142, 138, 226, 0.5); }
+  75% { border-color: rgba(214, 131, 151, 0.5); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 0%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+@keyframes pawfessor-walk {
+  0%, 100% { 
+    transform: translateY(0px) scale(1);
+  }
+  25% {
+    transform: translateY(-8px) scale(1.05);
+  }
+  50% { 
+    transform: translateY(-12px) scale(1.08);
+  }
+  75% {
+    transform: translateY(-8px) scale(1.05);
+  }
+}
+
+@keyframes ellipsis-cycle {
+  0%, 100% { content: ''; }
+  25% { content: ' .'; }
+  50% { content: ' . .'; }
+  75% { content: ' . . .'; }
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #9333ea, #ec4899);
-  border-radius: 5px;
+  background: var(--gradient-primary);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #7e22ce, #db2777);
+  background: var(--gradient-darkpinku);
 }
+
+/* Frosted glass effect utility */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Frosted fill with gradient - for large cards */
+.frost {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.5), rgba(192, 255, 248, 0.5));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Kawaii shadow for important elements */
+.kawaii-shadow {
+  box-shadow: var(--shadow-kawaii);
+}
+
+/* Glow shadows */
+.shadow-glow-pink {
+  box-shadow: var(--shadow-glow-pink);
+}
+
+.shadow-glow-blue {
+  box-shadow: var(--shadow-glow-blue);
+}
+
+.shadow-glow-purple {
+  box-shadow: var(--shadow-glow-purple);
+}
+
+.border-dance {
+  animation: border-dance 4s ease-in-out infinite;
+}
+
+/* Reusable Button Styles */
+
+/* Gradient Button with variable support */
+.gradient-button {
+  --gradient: var(--gradient-primary);
+  --roundness: var(--radius-full);
+  
+  background: var(--gradient);
+  border-radius: var(--roundness);
+  padding: 0.75rem 1.5rem;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.gradient-button:hover {
+  animation: gradient-shift 2s ease infinite;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.gradient-button:active {
+  transform: scale(0.98) translateY(2px);
+  box-shadow: 0 2px 8px rgba(252, 118, 255, 0.3);
+  filter: brightness(1.1);
+}
+
+/* Solid Button with variable support */
+.solid-button {
+  --color: var(--hotpinku);
+  --roundness: var(--radius-md);
+  
+  background-color: var(--color);
+  border-radius: var(--roundness);
+  padding: 0.75rem 1.5rem;
+  border: 2px solid transparent;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.solid-button:hover {
+  background-color: white;
+  color: var(--color);
+  border-color: var(--color);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.solid-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) inset;
+  filter: brightness(0.95);
+}
+

@@ -30,7 +30,7 @@ export default function AuthButton() {
         </div>
         <button
           onClick={signOut}
-          className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-semibold rounded-full hover:shadow-lg hover:scale-105 transition-all duration-200"
+          className="px-4 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white text-sm font-semibold rounded-full hover:shadow-lg hover:scale-105 transition-all duration-200"
         >
           Sign Out
         </button>
