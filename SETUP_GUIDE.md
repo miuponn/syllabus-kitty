@@ -6,15 +6,15 @@ A comprehensive guide to setting up and running the full Syllabus Kitty project.
 
 ## Documentation Options
 
-This project offers multiple ways to get started, depending on your needs:
+There multiple ways to get started, depending on your needs:
 
 | Option | Best For | Documentation |
 |--------|----------|---------------|
-| **Quick Start Script** | New developers, full setup | `./setup.sh` |
-| **Backend Only** | API development, testing | [backend/README.md](backend/README.md) |
+| **Quick Start Script** | New devs, full setup | `./setup.sh` |
+| **Backend Only** | API stuff, testing | [backend/README.md](backend/README.md) |
 | **Frontend Only** | UI development | [frontend/README.md](frontend/README.md) |
 | **Extension Only** | Chrome extension development | [extension/README.md](extension/README.md) |
-| **This Guide** | Complete understanding, troubleshooting | You're here! |
+| **This Guide** | Complete understanding, troubleshooting | ur here |
 
 ---
 
