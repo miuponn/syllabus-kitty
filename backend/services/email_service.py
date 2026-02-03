@@ -13,7 +13,6 @@ from email.mime.multipart import MIMEMultipart
 
 logger = logging.getLogger(__name__)
 
-# Brand colors from Syllabus Kitty design system
 COLORS = {
     'pink_body': '#C76585',
     'blue_body': '#6c82ff',

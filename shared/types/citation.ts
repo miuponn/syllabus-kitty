@@ -1,12 +1,7 @@
+/* UNUSED */
 import { ExtractedSpan } from './extracted-span';
 
-<<<<<<< HEAD
 /* Citation extracted from the syllabus */
-=======
-/**
- * Citation extracted from the syllabus
- */
->>>>>>> 06a67a2b3582b32eff048fb0af505fcb53774af8
 export interface Citation {
   doc_span: ExtractedSpan;
   parsed_citation: ParsedCitation;
@@ -14,13 +9,7 @@ export interface Citation {
   catalog_record?: CatalogRecord;
 }
 
-<<<<<<< HEAD
 /* Parsed citation information */
-=======
-/**
- * Parsed citation information
- */
->>>>>>> 06a67a2b3582b32eff048fb0af505fcb53774af8
 export interface ParsedCitation {
   title?: ExtractedSpan[];
   subtitle?: ExtractedSpan[];
@@ -30,13 +19,7 @@ export interface ParsedCitation {
   isbn?: ExtractedSpan[];
 }
 
-<<<<<<< HEAD
 /* Catalog key for looking up standardized citation information */
-=======
-/**
- * Catalog key for looking up standardized citation information
- */
->>>>>>> 06a67a2b3582b32eff048fb0af505fcb53774af8
 export interface CatalogKey {
   clean_title: string;
   clean_author: {
@@ -47,13 +30,7 @@ export interface CatalogKey {
   author_key: string;
 }
 
-<<<<<<< HEAD
 /* Standardized catalog record */
-=======
-/**
- * Standardized catalog record
- */
->>>>>>> 06a67a2b3582b32eff048fb0af505fcb53774af8
 export interface CatalogRecord {
   _id: number;
   work_cluster_size: number;

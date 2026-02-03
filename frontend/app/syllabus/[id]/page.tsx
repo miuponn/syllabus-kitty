@@ -15,6 +15,9 @@ import AddAssessmentModal from '../../components/AddAssessmentModal';
 import AddEventModal from '../../components/AddEventModal';
 import CalendarSuccessModal from '../../components/CalendarSuccessModal';
 
+// Backend API URL
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+
 // Helper function to extract day of week from recurrence rule
 function parseDayFromRRule(recurrence?: string[]): string {
   if (!recurrence || recurrence.length === 0) return 'Unknown';
@@ -254,7 +257,7 @@ export default function SyllabusPage() {
       
       // event_json is already saved to Supabase from CRUD operations
       // Now add all events to Google Calendar
-      const response = await fetch(`http://localhost:8000/api/syllabus/${syllabusId}/add-to-calendar`, {
+      const response = await fetch(`${BACKEND_URL}/api/syllabus/${syllabusId}/add-to-calendar`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${supabaseToken}`,
@@ -295,7 +298,7 @@ export default function SyllabusPage() {
     try {
       const { supabaseToken } = await getTokens();
       
-      const response = await fetch('http://localhost:8000/api/simplify/translate', {
+      const response = await fetch(`${BACKEND_URL}/api/simplify/translate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -384,7 +387,7 @@ export default function SyllabusPage() {
         calendarEvents: calendarJson,
       };
       
-      const response = await fetch('http://localhost:8000/api/simplify/pdf', {
+      const response = await fetch(`${BACKEND_URL}/api/simplify/pdf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -135,7 +135,7 @@ export default function CalendarSuccessModal({
           <div 
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
             style={{ 
-              background: 'var(--gradient-success)',
+              background: 'var(--gradient-accent)',
             }}
           >
             <img src="/assets/images/calendar2.png" alt="" className="w-6 h-6" />
@@ -188,7 +188,7 @@ export default function CalendarSuccessModal({
             className="flex items-start gap-3 text-left p-3 rounded-xl"
             style={{ background: 'var(--lemon)', opacity: 0.9 }}
           >
-            <img src="/assets/images/sparkles2.svg" alt="" className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <img src="/assets/images/sparkles2.svg" alt="" className="w-5 h-5 mt-0.5 shrink-0" />
             <p className="text-sm" style={{ color: 'var(--dark)' }}>
               <strong>Tip:</strong> Check your Google Calendar app to see all your upcoming deadlines and class times!
             </p>
@@ -216,7 +216,7 @@ export default function CalendarSuccessModal({
         <img 
           src="/assets/images/paw 2.svg" 
           alt="" 
-          className="absolute -bottom-3 -right-3 w-10 h-10 opacity-30 rotate-[20deg]"
+          className="absolute -bottom-3 -right-3 w-10 h-10 opacity-30 rotate-20"
         />
       </div>
       

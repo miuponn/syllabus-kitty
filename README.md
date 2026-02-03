@@ -1,144 +1,111 @@
-# Syllabus Kitty 🐱
+# Syllabus Kitty
 
-A modern, AI-powered web application that extracts structured information from syllabus PDFs and prepares it for Google Calendar integration.
+**For clarity, not clutter** Meow. Entry for Shehacks 10. 
 
-## 🚀 Getting Started
+**Turn any syllabus into your personal academic assistant.**
+
+Syllabus Kitty is an AI-powered tool that transforms chaotic syllabus PDFs into organized, actionable data. Upload a syllabus, get a clear schedule, and sync everything to Google Calendar. Syllabus Kitty comes in a fully-fleshed web application and Chrome extension form for when you're stuck on Brightspace, Blackboard, ACORN, so on... 
+
+## The Problem
+
+Students receive syllabi in inconsistent formats. Some are 20-page PDFs, others are HTML pages on your professor's random website, some are scanned images. Manually creating new calendar events for all your midterms, labs, and random one-off assignments isn't that bad until it is.Sometimes you're too busy actually doing your homework than to pre-occupy yourself with writing down what your homework is. Not to mention the syllabus is 32+ pages long and buried in academic lingo, and the required readings and teaching assistants' emails are on page 31. As per usual, it's pretty unfriendly to those of us that have certain cognitive disabilities, second language learners, or otherwise just need a bit of streamlining sometimes. It's an issue that hits close to home for us, for sure.
+
+## Our Solution
+
+Syllabus Kitty bridges the gap between receiving a your academic guide for the semester and actually using it:
+
+- **Upload or Detect** — Drag & drop a PDF on the web app, or use the Chrome extension to detect syllabi on any webpage
+- **AI Extraction** — AI extracts course info, assessments, due dates, and recurring events automatically
+- **Review & Edit** — See everything in a clean interface, edit mistakes, add missing items
+- **Simplify & Translate** — Generate a simplified version in plain English, or translate to 15+ languages
+- **Sync to Calendar** — Add all events to Google Calendar with one click
+- **Download PDF** — Export a clean, simplified PDF for offline reference
+
+## Features
+
+| Feature | Web App | Chrome Extension |
+|---------|---------|------------------|
+| PDF Upload | ✅ Drag & drop | ✅ Auto-detect on page |
+| AI Extraction | ✅ | ✅ |
+| Simplify | ✅ | ✅ |
+| Translate (15+ languages) | ✅ | ✅ |
+| Google Calendar Sync | ✅ | ✅ |
+| Download PDF | ✅ | ✅ |
+| Detects syllabi on your browser | ❌ | ✅ |
+
+## Getting Started
+
+### Quick Start (Recommended)
+
+```bash
+git clone https://github.com/your-username/syllabus-kitty.git
+cd syllabus-kitty
+./setup.sh
+```
 
 ### Prerequisites
 
-- Node.js 18+ 
-- Python 3.9+
-- Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-- Supabase account and project from [Supabase](https://supabase.com)
-- **macOS only**: Homebrew for system dependencies
+| Requirement | Where to Get It |
+|-------------|-----------------|
+| Node.js 18+ | [nodejs.org](https://nodejs.org) |
+| Python 3.9+ | [python.org](https://python.org) |
+| Gemini API Key | [Google AI Studio](https://makersuite.google.com/app/apikey) |
+| Supabase Project | [supabase.com](https://supabase.com) |
+| Homebrew (macOS) | [brew.sh](https://brew.sh) — for PDF generation libraries |
 
-### System Dependencies (macOS)
-
-The Simplify PDF feature uses WeasyPrint which requires system libraries:
+### Running the App
 
 ```bash
-brew install pango gdk-pixbuf libffi
-```
-
-### Frontend Setup
-
-1. Install dependencies:
-```bash
-cd frontend
-npm install
-```
-
-2. Set up environment variables:
-```bash
-cp .env.local.example .env.local
-# Edit .env.local and add your Supabase credentials
-```
-
-3. Run the development server:
-```bash
-npm run dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-### Backend Setup
-
-1. Install Python dependencies:
-```bash
-cd backend
-pip install -r requirements.txt
-```
-
-2. Set up environment variables:
-```bash
-cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
-```
-
-3. Run the FastAPI server:
-```bash
+# Terminal 1: Backend
+cd backend && source venv/bin/activate
 python main.py
+
+# Terminal 2: Frontend  
+cd frontend && npm run dev
+
+# Browser: Extension
+# Load unpacked from chrome://extensions/
 ```
 
-**Note (macOS)**: If PDF generation fails with library errors, run:
-```bash
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib && python main.py
-```
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
 
-The API will be available at [http://localhost:8000](http://localhost:8000)
-
-## 📁 Project Structure
+##  Structure
 
 ```
 syllabus-kitty/
-├── frontend/           # Next.js frontend
-│   ├── app/
-│   │   ├── components/ # React components
-│   │   │   ├── UploadSection.tsx
-│   │   │   ├── PDFViewer.tsx
-│   │   │   ├── MenuBar.tsx
-│   │   │   ├── ActivityCard.tsx
-│   │   │   ├── AssessmentsList.tsx
-│   │   │   └── RecurringEventsList.tsx
-│   │   ├── syllabus/[id]/  # Dynamic syllabus view
-│   │   │   └── page.tsx
-│   │   ├── page.tsx   # Main upload page
-│   │   └── globals.css
-│   └── package.json
-├── backend/            # FastAPI backend
-│   ├── main.py        # API entry point
-│   ├── config.py      # Configuration
-│   ├── routes/        # API routes
-│   └── services/      # Gemini & Calendar services
-└── shared/            # Shared TypeScript types
-    └── types/         # Type definitions
+├── frontend/          # Next.js web application
+├── backend/           # FastAPI server + Gemini AI
+├── extension/         # Chrome extension
+├── shared/            # Unused shared TypeScript types
+├── setup.sh           # Automated setup script
+└── SETUP_GUIDE.md     # Setup docs
 ```
 
-## ✨ Features
+## Docs
 
-- 📄 **PDF Upload**: Drag & drop or click to upload syllabus PDFs
-- 🤖 **AI Extraction**: Powered by Google Gemini AI
-- 📊 **Structured Data**: Extracts courses, schedules, assignments, and more
-- �️ **Interactive Viewer**: View PDF alongside extracted assessments and events
-- ✏️ **Edit & Manage**: Edit, delete, or add new assessments and recurring events
-- 🌐 **Accessibility**: Translate, screen reader, and simplify options
-- 💾 **JSON Export**: Download extracted data as JSON
-- 📅 **Calendar Integration**: Add all events to Google Calendar with one click (coming soon)
+| Guide | Description |
+|-------|-------------|
+| [**setup.sh**](setup.sh) | Try this first — automated shell script for everything |
+| [**SETUP_GUIDE.md**](SETUP_GUIDE.md) | Complete reference: env vars, endpoints, schema, deployment |
+| [**backend/README.md**](backend/README.md) | Server-specific setup, troubleshooting |
+| [**frontend/README.md**](frontend/README.md) | Client-specific setup, components, troubleshooting |
+| [**extension/README.md**](extension/README.md) | Chrome extension setup, OAuth config |
 
-## 🎨 Tech Stack
+## How it's built
 
-### Frontend
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS 4
+| Layer | Technologies |
+|-------|--------------|
+| **Frontend** | Next.js 14, React, TypeScript, Tailwind CSS |
+| **Server** | FastAPI, Python 3.9+, Pydantic |
+| **AI** | Google Gemini AI (gemini-3.0-flash) |
+| **Database** | Supabase (PostgreSQL) |
+| **Auth** | Supabase Auth + Google OAuth |
+| **PDF Generation** | WeasyPrint, Markdown2 |
+| **Extension** | Chrome Manifest V3 |
+| **Calendar** | Google Calendar API |
 
-### Backend
-- FastAPI
-- Python 3.9+
-- Google Generative AI (Gemini)
-- Google Calendar API (for future integration)
+---
 
-### Database
-- Supabase (PostgreSQL)
-- Authentication & user management
-
-## 📝 API Endpoints
-
-- `POST /api/syllabus/upload` - Upload and process syllabus PDF
-- `GET /api/syllabus/health` - Health check
-- `POST /api/calendar/create` - Create calendar (coming soon)
-- `GET /docs` - Interactive API documentation
-
-## 🔮 Coming Soon
-
-- [ ] Google Calendar integration
-- [ ] Multi-file upload
-- [ ] Model fine-tuning support
-- [ ] Data persistence
-- [ ] User authentication
-- [ ] Calendar event management
-
-## 📄 License
-
-MIT
+Built with and love, 🐱GPT and Redbull

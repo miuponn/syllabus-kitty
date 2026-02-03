@@ -1,4 +1,4 @@
-/* Syllabus Kitty - Shared Type Definitions - for syllabus document extraction and processing. */
+/* Syllabus Kitty - UNUSED Shared Type Definitions - for syllabus document extraction and processing. */
 
 // Core primitives
 export type { ExtractedSpan } from './types/extracted-span';

@@ -214,7 +214,7 @@ export default function SyllabusHeader({
               justifyContent: 'center',
               gap: '0.5rem',
               animation: 'rainbow-slide 2s linear infinite',
-              minWidth: '120px', // Fixed minimum width to prevent shrinking
+              minWidth: '120px',
             } : getButtonStyle('var(--orang)')}
             onMouseEnter={(e) => !isSimplifying && handleButtonHover(e, 'var(--orang)')}
             onMouseLeave={(e) => !isSimplifying && handleButtonLeave(e, 'var(--orang)')}

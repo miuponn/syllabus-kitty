@@ -6,7 +6,7 @@ import KawaiiDialogue from './components/KawaiiDialogue';
 export default function Home() {
   return (
     <div className="min-h-screen relative pt-16 sm:pt-20">
-      {/* Floating decorative elements - background only */}
+      {/* Floating decorative elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {/* Animated blobs */}
         <img 
@@ -168,7 +168,7 @@ export default function Home() {
               Syllabus to schedule in just one click
             </p>
 
-            {/* Upload Section - smaller and with reduced top margin */}
+            {/* Upload Section */}
             <div className="w-full max-w-lg lg:max-w-xl xl:max-w-2xl px-6 sm:px-8">
               <UploadSection />
             </div>

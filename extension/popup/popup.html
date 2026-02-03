@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syllabus Kitty</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Sour+Gummy:wght@400;500;600;700&family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <img src="../images/pawfessor-head.png" alt="Folder" class="mascot" id="mascot">
+        <div class="title-area">
+          <h1 class="title">Syllabus Kitty</h1>
+          <p class="subtitle">Extract & simplify syllabi</p>
+        </div>
+      </div>
+      <div class="sparkle-decoration">
+        <img src="../images/sparkles.svg" alt="" class="sparkle">
+      </div>
+    </header>
+
+    <!-- Status Card -->
+    <div class="status-card" id="statusCard">
+      <div class="status-icon" id="statusIcon">
+        <img class="icon-idle status-img" src="../images/glass.png" alt="">
+        <img class="icon-extracting status-img hidden" src="../images/earth.png" alt="">
+        <img class="icon-success status-img hidden" src="../images/calendar-small.png" alt="">
+        <svg class="icon-error hidden" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+      </div>
+      <div class="status-text">
+        <p class="status-title" id="statusTitle">Ready to extract</p>
+        <p class="status-description" id="statusDescription">Click Detect to extract syllabus content</p>
+      </div>
+    </div>
+
+    <!-- Page Info -->
+    <div class="page-info" id="pageInfo">
+      <div class="page-info-header">
+        <span class="page-type-badge" id="pageTypeBadge">
+          <span class="badge-icon">📄</span>
+          <span class="badge-text" id="pageTypeText">Detecting...</span>
+        </span>
+      </div>
+      <p class="page-title" id="pageTitle">Loading page title...</p>
+    </div>
+
+    <!-- Preview Section -->
+    <div class="preview-section" id="previewSection">
+      <div class="preview-header">
+        <button class="preview-toggle" id="previewToggle">
+          <span class="preview-label">
+            <span id="previewTypeLabel">Preview</span>
+          </span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+          </svg>
+        </button>
+
+        <!-- Action buttons -->
+        <div class="preview-actions hidden" id="actionToolbar">
+          <button class="preview-text-btn simplify" id="simplifyBtn" disabled>
+            <svg class="preview-text-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Simplify</span>
+          </button>
+
+          <div class="preview-action-group">
+            <button class="preview-text-btn translate" id="translateBtn" disabled>
+              <svg class="preview-text-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+              </svg>
+              <span>Translate</span>
+            </button>
+            <div class="translate-dropdown hidden" id="translateDropdown">
+              <select id="languageSelect" class="language-select">
+                <option value="">Select...</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="preview-icon-btn back" id="resetBtn" disabled title="Undo">
+            <svg class="preview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="preview-content hidden" id="previewContent">
+        <textarea readonly id="previewText" placeholder="Extracted content goes here..."></textarea>
+        <div class="preview-stats">
+          <span id="charCount">0 characters</span>
+          <span id="wordCount">0 words</span>
+          <span class="stats-spacer"></span>
+          <button class="mini-btn" id="downloadPdfBtn" type="button" disabled>
+            <img src="../images/download.svg" alt="" class="mini-btn-icon">
+            <span class="mini-btn-text">PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Action Button -->
+    <div class="actions">
+      <!-- Detect button -->
+      <button class="btn btn-primary" id="detectBtn">
+        <img src="../images/glass.png" alt="" class="btn-icon-img">
+        <span class="btn-text">Detect Syllabus</span>
+      </button>
+
+      <!-- Add to Calendar button -->
+      <button class="btn btn-primary hidden" id="addToCalendarBtn" disabled>
+        <img src="../images/calendar.png" alt="" class="btn-icon-img">
+        <span class="btn-text">Add Events to Google Calendar</span>
+      </button>
+
+      <!-- Clear Detection button -->
+      <button class="btn btn-clear hidden" id="clearDetectionBtn">
+        <span class="btn-text">Clear Detection</span>
+      </button>
+      
+      <button class="btn btn-secondary hidden" id="openAppBtn">
+        <img src="../images/sparkles.svg" alt="" class="btn-icon-img">
+        <span class="btn-text">Open in Syllabus Kitty</span>
+      </button>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message hidden" id="errorMessage">
+      <div class="error-content">
+        <span class="error-icon">😿</span>
+        <p class="error-text" id="errorText">Something went wrong</p>
+      </div>
+      <button class="error-action" id="retryBtn">Try Again</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Made with 💖 for students</p>
+      <a href="http://localhost:3000" target="_blank" class="footer-link">Open Syllabus Kitty App</a>
+    </footer>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

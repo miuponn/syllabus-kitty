@@ -19,8 +19,8 @@ interface AssessmentsListProps {
   onAddNew?: () => void;
 }
 
-const CARD_HEIGHT = 90; // Approximate height per card in pixels (including padding)
-const GAP_HEIGHT = 12; // gap-3 = 0.75rem = 12px
+const CARD_HEIGHT = 90; 
+const GAP_HEIGHT = 12; 
 
 export default function AssessmentsList({ assessments, onEdit, onDelete, onAddNew }: AssessmentsListProps) {
   const [isExpanded, setIsExpanded] = useState(false);

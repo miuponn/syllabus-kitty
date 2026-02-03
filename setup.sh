@@ -1,110 +1,229 @@
 #!/bin/bash
 
-echo "🐱 Setting up Syllabus Kitty..."
+echo "🐱 Syllabus Kitty - Setup Script"
+echo "================================="
 echo ""
 
-# Kill any existing processes
-echo "🔪 Killing existing processes..."
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_status() { echo -e "${GREEN}✅ $1${NC}"; }
+print_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+print_error() { echo -e "${RED}❌ $1${NC}"; }
+print_info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# ============================================
+# CLEANUP
+# ============================================
+echo "🔪 Cleaning up existing processes..."
 pkill -f "uvicorn main:app" 2>/dev/null
 pkill -f "python main.py" 2>/dev/null
 pkill -f "next-server" 2>/dev/null
 pkill -f "node.*next" 2>/dev/null
 lsof -ti:8000 | xargs kill -9 2>/dev/null
 lsof -ti:3000 | xargs kill -9 2>/dev/null
-echo "✅ Cleaned up existing processes"
+print_status "Cleaned up existing processes"
 echo ""
 
-# Check if Python is installed
+# ============================================
+# PREREQUISITES CHECK
+# ============================================
+echo "🔍 Checking prerequisites..."
+
+# Check Python
 if ! command -v python3 &> /dev/null; then
-    echo "❌ Python 3 is not installed. Please install Python 3.9 or higher."
+    print_error "Python 3 is not installed. Please install Python 3.9 or higher."
     exit 1
 fi
+PYTHON_VERSION=$(python3 --version 2>&1 | cut -d' ' -f2)
+print_status "Python $PYTHON_VERSION found"
 
-# Check if Node.js is installed
+# Check Node.js
 if ! command -v node &> /dev/null; then
-    echo "❌ Node.js is not installed. Please install Node.js 18 or higher."
+    print_error "Node.js is not installed. Please install Node.js 18 or higher."
     exit 1
 fi
+NODE_VERSION=$(node --version)
+print_status "Node.js $NODE_VERSION found"
 
-echo "✅ Python and Node.js found"
-echo ""
-
-# Check for Homebrew (macOS)
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    if ! command -v brew &> /dev/null; then
-        echo "⚠️  Homebrew not found. Installing system dependencies manually may be required."
-    else
-        echo "📦 Installing system dependencies for PDF generation (WeasyPrint)..."
-        brew install pango gdk-pixbuf libffi 2>/dev/null || echo "✅ System libraries already installed or install skipped"
-        echo "✅ System dependencies ready"
-    fi
+# Check npm
+if ! command -v npm &> /dev/null; then
+    print_error "npm is not installed. Please install npm."
+    exit 1
 fi
+print_status "npm found"
 echo ""
 
-# Setup Backend
+# ============================================
+# SYSTEM DEPENDENCIES (macOS)
+# ============================================
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "🍎 macOS detected - Installing system dependencies..."
+    if ! command -v brew &> /dev/null; then
+        print_warning "Homebrew not found. WeasyPrint may not work for PDF generation."
+        print_info "Install Homebrew from: https://brew.sh"
+    else
+        echo "   Installing libraries for PDF generation (WeasyPrint)..."
+        brew install pango gdk-pixbuf libffi 2>/dev/null || print_status "System libraries already installed"
+        print_status "System dependencies ready"
+    fi
+    echo ""
+fi
+
+# ============================================
+# BACKEND SETUP
+# ============================================
 echo "📦 Setting up Backend..."
-cd backend
+echo "   See backend/README.md for full documentation"
+cd "$SCRIPT_DIR/backend"
 
 # Create virtual environment
 if [ ! -d "venv" ]; then
+    echo "   Creating virtual environment..."
     python3 -m venv venv
-    echo "✅ Virtual environment created"
+    print_status "Virtual environment created"
+else
+    print_status "Virtual environment already exists"
 fi
 
 # Activate virtual environment
 source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
-echo "✅ Backend dependencies installed"
+echo "   Installing Python dependencies..."
+pip install -r requirements.txt --quiet
+print_status "Backend dependencies installed"
 
 # Create .env if it doesn't exist
 if [ ! -f ".env" ]; then
-    cp .env.example .env
-    echo "⚠️  Please edit backend/.env and add your GEMINI_API_KEY"
+    if [ -f ".env.local" ]; then
+        cp .env.local .env
+        print_warning "Created backend/.env from .env.local - Please add your API keys!"
+    else
+        cat > .env << 'EOF'
+# Backend Environment Variables
+# See backend/README.md for full documentation
+
+# Required
+GEMINI_API_KEY=your_gemini_api_key_here
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+
+# Optional - Server Config
+DEBUG=true
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+
+# Optional - Gemini Config
+GEMINI_MODEL_ID=gemini-3.0-flash
+EOF
+        print_warning "Created backend/.env template - Please add your API keys!"
+    fi
+else
+    print_status "backend/.env already exists"
 fi
 
-cd ..
+cd "$SCRIPT_DIR"
 echo ""
 
-# Setup Frontend
+# ============================================
+# FRONTEND SETUP
+# ============================================
 echo "📦 Setting up Frontend..."
-cd frontend
+echo "   See frontend/README.md for full documentation"
+cd "$SCRIPT_DIR/frontend"
 
 # Install dependencies
-npm install
-echo "✅ Frontend dependencies installed"
+echo "   Installing npm dependencies..."
+npm install --silent 2>/dev/null
+print_status "Frontend dependencies installed"
 
 # Create .env.local if it doesn't exist
 if [ ! -f ".env.local" ]; then
-    cp .env.example .env.local
-    echo "✅ Created frontend/.env.local from template"
+    cat > .env.local << 'EOF'
+# Frontend Environment Variables
+# See frontend/README.md for full documentation
+
+# Supabase - Get from: Supabase Dashboard → Settings → API
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+EOF
+    print_warning "Created frontend/.env.local template - Please add your Supabase credentials!"
 else
-    echo "✅ frontend/.env.local already exists"
+    print_status "frontend/.env.local already exists"
 fi
 
-cd ..
+cd "$SCRIPT_DIR"
 echo ""
 
+# ============================================
+# EXTENSION INFO
+# ============================================
+echo "🧩 Extension Setup..."
+echo "   See extension/README.md for full documentation"
+echo ""
+print_info "The Chrome extension requires manual loading:"
+echo "   1. Open chrome://extensions/ in Chrome"
+echo "   2. Enable 'Developer mode' (toggle in top right)"
+echo "   3. Click 'Load unpacked'"
+echo "   4. Select the 'extension' folder from this project"
+echo ""
+print_info "For Google Calendar integration, you'll need to:"
+echo "   1. Create OAuth credentials in Google Cloud Console"
+echo "   2. Update extension/manifest.json with your client ID"
+echo "   See extension/README.md for detailed instructions"
+echo ""
+
+# ============================================
+# SUMMARY
+# ============================================
+echo "============================================="
 echo "🎉 Setup complete!"
+echo "============================================="
 echo ""
-echo "⚠️  IMPORTANT: Configure your environment variables"
+echo -e "${YELLOW}⚠️  IMPORTANT: Configure your environment variables${NC}"
 echo ""
-echo "Backend Setup:"
-echo "1. Get your Gemini API key from: https://makersuite.google.com/app/apikey"
-echo "2. Edit backend/.env and add: GEMINI_API_KEY=your_key_here"
+echo "┌─────────────────────────────────────────────────────────────┐"
+echo "│ BACKEND (backend/.env)                                      │"
+echo "├─────────────────────────────────────────────────────────────┤"
+echo "│ 1. Get Gemini API key:                                      │"
+echo "│    https://makersuite.google.com/app/apikey                 │"
+echo "│                                                             │"
+echo "│ 2. Get Supabase credentials:                                │"
+echo "│    https://supabase.com → Your Project → Settings → API    │"
+echo "│    - SUPABASE_URL (Project URL)                             │"
+echo "│    - SUPABASE_SERVICE_ROLE_KEY (service_role key)           │"
+echo "└─────────────────────────────────────────────────────────────┘"
 echo ""
-echo "Frontend Setup:"
-echo "1. Create a Supabase project at: https://supabase.com"
-echo "2. Go to Project Settings → API in Supabase dashboard"
-echo "3. Edit frontend/.env.local and add:"
-echo "   - NEXT_PUBLIC_SUPABASE_URL=your_project_url"
-echo "   - NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key"
+echo "┌─────────────────────────────────────────────────────────────┐"
+echo "│ FRONTEND (frontend/.env.local)                              │"
+echo "├─────────────────────────────────────────────────────────────┤"
+echo "│ Get from Supabase Dashboard → Settings → API:               │"
+echo "│ - NEXT_PUBLIC_SUPABASE_URL (Project URL)                    │"
+echo "│ - NEXT_PUBLIC_SUPABASE_ANON_KEY (anon/public key)           │"
+echo "└─────────────────────────────────────────────────────────────┘"
 echo ""
-echo "Start the app:"
-echo "1. Backend: cd backend && source venv/bin/activate && python main.py"
-echo "   (On macOS, if PDF generation fails, run with: export DYLD_LIBRARY_PATH=/opt/homebrew/lib && python main.py)"
-echo "2. Frontend (new terminal): cd frontend && npm run dev"
-echo "3. Open http://localhost:3000 in your browser"
+echo "┌─────────────────────────────────────────────────────────────┐"
+echo "│ 🚀 START THE APP                                            │"
+echo "├─────────────────────────────────────────────────────────────┤"
+echo "│ Terminal 1 (Backend):                                       │"
+echo "│   cd backend && source venv/bin/activate && python main.py  │"
+echo "│                                                             │"
+echo "│   macOS PDF issues? Run with:                               │"
+echo "│   DYLD_LIBRARY_PATH=/opt/homebrew/lib python main.py        │"
+echo "│                                                             │"
+echo "│ Terminal 2 (Frontend):                                      │"
+echo "│   cd frontend && npm run dev                                │"
+echo "│                                                             │"
+echo "│ Then open: http://localhost:3000                            │"
+echo "└─────────────────────────────────────────────────────────────┘"
 echo ""
 echo "🐱 Happy coding!"

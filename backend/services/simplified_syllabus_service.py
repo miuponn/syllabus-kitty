@@ -1,12 +1,6 @@
 """
-Simplified Syllabus Service
-
+Simplified Syllabus Service.
 Creates an accessible, plain-language version of a syllabus using a standardized template.
-Designed for:
-- ESL students
-- Screen reader users
-- Students with ADHD, dyslexia, or executive-function challenges
-- Anyone who wants a predictable, scannable format
 """
 
 import google.generativeai as genai

@@ -1,6 +1,7 @@
 import { ExtractedSpan } from './extracted-span';
 
 /**
+ * UNUSED
  * Assessment/deliverable item with due date
  * Covers assignments, projects, exams, presentations, etc.
  */

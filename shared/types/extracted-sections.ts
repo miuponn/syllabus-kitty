@@ -1,14 +1,9 @@
 import { ExtractedSpan } from './extracted-span';
 import { TeachingAssistant } from './teaching-assistant';
 
-<<<<<<< HEAD
-/* NLP output containing all extracted sections from the syllabus */
+/* UNUSED
+ * NLP output containing all extracted sections from the syllabus */
 
-=======
-/**
- * Core NLP output containing all extracted sections from the syllabus
- */
->>>>>>> 06a67a2b3582b32eff048fb0af505fcb53774af8
 export interface ExtractedSections {
   // Basic course information
   title?: ExtractedSpan[];

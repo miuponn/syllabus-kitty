@@ -4,10 +4,11 @@ node_modules/
 venv/
 
 # Environment files
-.env
 .env.local
-.env.*.local
-*.env
+.env*.local
+backend/.env
+
+# Note: frontend/.env is committed (has defaults only, no secrets)
 
 # Build outputs
 .next/
@@ -28,7 +29,7 @@ __pycache__/
 *.py[cod]
 *.pyo
 
-# Credentials (keep these private!)
+# Credentials
 credentials.json
 token.json
 

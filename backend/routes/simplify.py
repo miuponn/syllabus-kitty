@@ -1,9 +1,4 @@
-"""
-Simplified Syllabus Routes
-
-Endpoints for generating accessible, simplified versions of syllabi
-with translation support.
-"""
+""" Endpoints for simplifying syllabi"""
 
 from fastapi import APIRouter, HTTPException, Header
 from fastapi.responses import Response
@@ -70,11 +65,6 @@ class TranslateRequest(BaseModel):
 
 @router.get("/languages", response_model=LanguagesResponse)
 async def list_supported_languages():
-    """
-    Get list of supported languages for translation.
-    
-    Returns a dictionary mapping language codes to language names.
-    """
     return LanguagesResponse(languages=get_supported_languages())
 
 

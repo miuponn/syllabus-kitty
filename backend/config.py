@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     # CORS
     allowed_origins: str = "http://localhost:3000"
     
+    # Frontend URL (for extension app-url endpoint)
+    frontend_url: str = "http://localhost:3000"
+    
     # Upload Configuration
     max_upload_size_mb: int = 25
     upload_dir: str = "./uploads"

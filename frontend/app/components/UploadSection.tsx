@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import PawfessorLoading from './PawfessorLoading';
 import { createClient } from '@/app/lib/supabaseClient';
 
+// Backend API URL
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+
 interface UploadState {
   uploading: boolean;
   processing: boolean;
@@ -173,7 +176,7 @@ export default function UploadSection() {
         googleRefresh: googleRefreshToken ? '✓' : '✗',
       });
       
-      // Step 1: Upload PDF to Supabase Storage
+      // Upload PDF to Supabase Storage
       const supabase = createClient();
       const session = await supabase.auth.getSession();
       const userId = session.data.session?.user?.id;
@@ -208,7 +211,7 @@ export default function UploadSection() {
       const pdfUrl = urlData.publicUrl;
       console.log('PDF uploaded successfully:', pdfUrl);
       
-      // Step 2: Send PDF to backend for AI processing first
+      // Send PDF to backend for AI processing first
       // Backend will return the file_id it uses
       const formData = new FormData();
       formData.append('file', file);
@@ -225,7 +228,7 @@ export default function UploadSection() {
 
       setUploadState(prev => ({ ...prev, processing: true }));
       
-      const response = await fetch('http://localhost:8000/api/syllabus/upload', {
+      const response = await fetch(`${BACKEND_URL}/api/syllabus/upload`, {
         method: 'POST',
         headers,
         body: formData,
@@ -238,7 +241,7 @@ export default function UploadSection() {
 
       const result = await response.json();
       
-      // Step 3: Now insert into sillabi table with the file_id from backend
+      // insert into sillabi table with the file_id from backend
       const backendFileId = result.file_id || result.syllabus_id;
       if (backendFileId) {
         const { error: insertError } = await supabase

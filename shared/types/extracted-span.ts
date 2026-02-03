@@ -1,4 +1,5 @@
 /**
+ * UNUSED
  * Generic extracted span from NLP
  * Represents a piece of text extracted from a document with confidence and position metadata
  */

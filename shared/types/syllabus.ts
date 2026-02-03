@@ -4,6 +4,7 @@ import { Citation } from './citation';
 import { ClassSchedule } from './class-schedule';
 import { GradingScheme } from './assessment';
 
+/* UNUSED */
 /* Top-level document model representing a complete syllabus extraction */
 export interface SyllabusDocument {
   /* Language code (e.g., 'en', 'fr') */

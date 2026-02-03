@@ -1,25 +1,35 @@
 # Backend dependencies
-fastapi==0.115.0
-uvicorn[standard]==0.32.0
-python-multipart==0.0.9
-python-dotenv==1.0.1
-google-generativeai==0.8.3
-google-auth==2.35.0
-google-auth-oauthlib==1.2.1
-google-auth-httplib2==0.2.0
-google-api-python-client==2.149.0
-pydantic>=2.9.2
-pydantic-settings>=2.5.2
-aiofiles==24.1.0
-supabase>=2.27.0
+fastapi>=0.100.0,<1.0.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.0.0,<3.0.0
+pydantic-settings>=2.0.0
+
+# File handling and utilities
+python-multipart
+python-dotenv
+aiofiles
 requests
+PyJWT
+
+# Google Gemini AI
+google-generativeai>=0.8.0
+
+# Google APIs (Calendar, Gmail, oAuth)
+google-auth>=2.0.0
+google-auth-oauthlib>=1.0.0
+google-auth-httplib2>=0.2.0
+google-api-python-client>=2.100.0
+
+# Supbase 
+supabase>=2.0.0,<3.0.0
+httpx>=0.27.0
 
 # Email Notifications
-fastapi-mail>=1.4.1
-jinja2>=3.1.2
-python-dateutil>=2.8.2
-pytz>=2023.3
+jinja2
+python-dateutil
+pytz
 
-# PDF Generation for Simplified Syllabus (Alternative: simpler, no system dependencies)
-markdown2>=2.5.0
-reportlab>=4.0.0
+# PDF Generation
+# Note: Weasyprint requires system libs: brew install pango gdk-pixbuf libffi. See README.md for details.
+markdown2>=2.4.0
+weasyprint>=60.0,<70.0

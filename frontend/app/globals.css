@@ -394,7 +394,7 @@ html:hover::-webkit-scrollbar-thumb {
   filter: brightness(0.95);
 }
 
-/* Custom Animations - Tailwind v4 */
+/* Custom Animations */
 @keyframes pawfessor-walk {
   0%, 100% { 
     transform: translateX(0) scale(1);
