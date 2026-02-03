@@ -1,6 +1,6 @@
 # Syllabus Kitty
 
-**For clarity, not clutter** Meow. Entry for Shehacks 10. 
+**For clarity, not clutter.** Meow. Entry for Shehacks 10. 
 
 **Turn any syllabus into your personal academic assistant.**
 
